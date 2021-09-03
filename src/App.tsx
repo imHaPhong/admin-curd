@@ -10,7 +10,7 @@ export function App() {
         message: "This text is read from context.notification ",
       }}
     >
-      <div className="w-full">
+      <div className="w-full ">
         <BrowserRouter>
           <Switch>
             {routesConfig.map(({ path, exact, component: Component }) => (

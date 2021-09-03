@@ -2,21 +2,38 @@ const colors = require("tailwindcss/colors");
 
 module.exports = {
   mode: "jit",
-  purge: [
-    "./src/**/*.{js,ts,jsx,tsx}",
-    './public/index.html'
-  ],
+  purge: ["./src/**/*.{js,ts,jsx,tsx}", "./public/index.html"],
   important: false,
   theme: {
     colors: {
       ...colors,
       primary: {
-        light: "rgba(0, 161, 156, 0.5)", // TODO change to match design
-        DEFAULT: "#00a19c", // TODO change to match design
+        light: "#007bff", // TODO change to match design
+        DEFAULT: "#3E8EF7", // TODO change to match design
       },
-      black: {
+      secondary: {
+        DEFAULT: "#868e96",
+      },
+      dark: {
         light: "#2d2d2d",
-        DEFAULT: "#000",
+        DEFAULT: "#58666c",
+      },
+      light: {
+        DEFAULT: "#F1F4F5",
+      },
+      gray: {
+        dark: "#343a40",
+        DEFAULT: "#868e96",
+      },
+      table: {
+        light: "#76838f",
+        DEFAULT: "#fbfdfd",
+        dark: "#F3F7F9",
+        text: "#526069",
+        lightGray: "#e4eaec",
+      },
+      darkBlue: {
+        DEFAULT: "#263238",
       },
     },
     extend: {

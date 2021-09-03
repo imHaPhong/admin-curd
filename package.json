@@ -21,8 +21,11 @@
     "classnames": "^2.3.1",
     "date-fns": "^2.22.1",
     "immer": "^9.0.5",
+    "query-string": "^7.0.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
+    "react-hook-form": "^7.14.0",
+    "react-icons": "^4.2.0",
     "react-router-dom": "^5.2.0",
     "web-vitals": "^1.1.2"
   },

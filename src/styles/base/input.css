@@ -6,3 +6,13 @@ input::-webkit-inner-spin-button {
 input[type="number"] {
   -moz-appearance: textfield;
 }
+
+input{
+  border: 1px solid #e4eaec;
+  outline: none;
+  transition-duration: 300ms;
+}
+
+input:focus{
+  border: 1px solid #3E8EF7;
+}

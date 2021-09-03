@@ -1,12 +1,12 @@
 import { PageLayout } from "src/components";
-import { ProjectTypeTable } from "src/modules/project-type";
+import { TechStackTable } from "src/modules/tech-stack";
 
-export default function Home() {
+export default function TechStackPage() {
   return (
     <div className="w-full">
       <main className="w-full flex flex-wrap justify-center ">
         <PageLayout>
-          <ProjectTypeTable />
+          <TechStackTable />
         </PageLayout>
       </main>
     </div>

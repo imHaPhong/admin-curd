@@ -6,7 +6,6 @@ import { apiClientBrowser } from "src/lib/request";
 import { ProjectTypeRow } from "./project-type-row";
 import queryString from "query-string";
 import { FaAngleLeft, FaAngleRight } from "react-icons/fa";
-import { getProjectType } from "../project-type.service";
 
 export interface ProjectType {
   _id: string;
@@ -19,22 +18,19 @@ export interface ProjectType {
 export function ProjectTypeTable() {
   const isMobile = useMedia("(min-width: 768px)");
   const [listProjectType, setListProjectType] = useState<ProjectType[]>([]);
-  const [page, setPage] = useState<number>(0);
+  const [page, setPage] = useState<number>(1);
 
   const [search, setSearch] = useState("");
 
   const location = useLocation();
   const history = useHistory();
   useEffect(() => {
-    const pageObject: { page?: number } = queryString.parse(location.search);
-    const pageNum = (pageObject.page as number) || 1;
-    if (pageNum === 1) {
-      setPage(pageNum);
-    }
-
+    const pageObject: { page?: number; search?: string } = queryString.parse(location.search);
+    // eslint-disable-next-line no-console
+    console.log(pageObject);
     async function getProjectTypes() {
       const projectTypes = await apiClientBrowser.get(
-        `http://localhost:8080/project-type?page=${pageNum}`,
+        `http://localhost:8080/project-type?${queryString.stringify(pageObject)}`,
       );
       setListProjectType(projectTypes.data as ProjectType[]);
     }
@@ -52,13 +48,16 @@ export function ProjectTypeTable() {
   }
 
   function userInputHandler(ev: FormEvent<HTMLInputElement>) {
-    setSearch(ev.currentTarget.value);
-    async function searchProjectType() {
-      const searchProjectTypeData = await getProjectType(ev.currentTarget.value);
-      setListProjectType(searchProjectTypeData as ProjectType[]);
-    }
-
-    searchProjectType();
+    const pageObject: { page?: number; search?: string } = queryString.parse(location.search);
+    setSearch(ev.currentTarget.value.trim());
+    const a = {
+      ...pageObject,
+      search: ev.currentTarget.value.trim(),
+    };
+    // if (ev.currentTarget.value.trim() === "") {
+    //   a.search = null;
+    // }
+    history.push(`?${queryString.stringify(a)}`);
   }
 
   return (

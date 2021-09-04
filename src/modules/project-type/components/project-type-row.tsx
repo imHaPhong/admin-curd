@@ -1,5 +1,11 @@
 import { useCallback, useState } from "react";
-import { AiFillEdit, AiFillMinusCircle, AiFillPlusCircle } from "react-icons/ai";
+import {
+  AiFillEdit,
+  AiFillEye,
+  AiFillMinusCircle,
+  AiFillPlusCircle,
+  AiOutlineClose,
+} from "react-icons/ai";
 import { BsTrash } from "react-icons/bs";
 import { Link, useHistory, useLocation } from "react-router-dom";
 import { Modal } from "src/components";
@@ -41,15 +47,35 @@ export function ProjectTypeRow({ name, desc, priority, status, _id }: ProjectTyp
           {children}
         </div>
       </div> */}
-        <div>
-          <button onClick={() => deleteProjectTypeHandler(_id)}>Xóa</button>
-          <button onClick={closeModal}>Hủy</button>
+        <div className="">
+          <div className="flex justify-between p-3 border-b items-center border-table-lightGray">
+            <span className="font-medium">Xóa</span>
+            <AiOutlineClose className="text-xl cursor-pointer" onClick={closeModal} />
+          </div>
+          <div className="border-b border-table-lightGray p-3 py-4">
+            <p>
+              Bạn có chắc xóa dữ liệu <span className="font-bold">{name}</span> không?
+            </p>
+          </div>
+          <div className="p-3 float-right">
+            <button
+              className="p-4 py-1 border border-primary rounded mr-5 hover:bg-primary hover:text-white duration-300"
+              onClick={closeModal}
+            >
+              Hủy
+            </button>
+            <button
+              className="p-4 py-1 bg-primary rounded text-white"
+              onClick={() => deleteProjectTypeHandler(_id)}
+            >
+              Xóa
+            </button>
+          </div>
         </div>
       </Modal>
       <tr
         className="border border-r-0 border-l-0 border-table-lightGray text-base odd:bg-table hover:bg-table-dark font-light cursor-pointer"
         // onClick={() => setIsShow((p) => !p)}
-        onClick={() => history.push(`${location.pathname}/asd`)}
       >
         <td className="py-2 flex items-center px-2">
           {!isMobile && (
@@ -74,13 +100,16 @@ export function ProjectTypeRow({ name, desc, priority, status, _id }: ProjectTyp
             <td>{status}</td>
             <td>
               <div className="flex ">
-                <span className="mr-5">
+                <span>
                   <Link to={`project-type/edit/${_id}`}>
                     <AiFillEdit />
                   </Link>
                 </span>
-                <span onClick={openModal}>
+                <span onClick={openModal} className="mx-5">
                   <BsTrash />
+                </span>
+                <span onClick={openModal}>
+                  <AiFillEye onClick={() => history.push(`${location.pathname}/${_id}`)} />
                 </span>
               </div>
             </td>

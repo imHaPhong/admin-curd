@@ -46,9 +46,15 @@ export function Sidebar({ isShow }: SidebarProps) {
             <CustomLink to="/customer-group">Nhóm khách hàng</CustomLink>
           </li>
           <li className="font-normal mt-5 mb-2 uppercase">Quản lý</li>
-          <li>Trung tâm, bộ phận, phòng ban</li>
-          <li>Nhân sự</li>
-          <li>Dự án</li>
+          <li>
+            <CustomLink to="/department">Trung tâm, bộ phận, phòng ban </CustomLink>
+          </li>
+          <li>
+            <CustomLink to="/employee">Nhân sự </CustomLink>
+          </li>
+          <li>
+            <CustomLink to="/project">Dự án</CustomLink>
+          </li>
           <li className="font-normal mt-5 mb-2 uppercase">Báo cáo</li>
           <li>Số lượng dự án</li>
           <li>Số lượng nhân sự</li>

@@ -2,6 +2,9 @@ import { BrowserRouter, Route, Switch } from "react-router-dom";
 import { AppContextProvider } from "./contexts";
 import { routesConfig } from "./routes-config";
 import "./styles/tailwind.css";
+import "react-datepicker/dist/react-datepicker.css";
+import "react-toastify/dist/ReactToastify.css";
+import { ToastContainer } from "react-toastify";
 
 export function App() {
   return (
@@ -10,6 +13,17 @@ export function App() {
         message: "This text is read from context.notification ",
       }}
     >
+      <ToastContainer
+        position="top-center"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
       <div className="w-full ">
         <BrowserRouter>
           <Switch>

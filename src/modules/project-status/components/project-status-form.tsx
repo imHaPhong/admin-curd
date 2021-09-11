@@ -1,5 +1,5 @@
-import React from "react";
 import { useForm } from "react-hook-form";
+import { useHistory } from "react-router";
 import { createProjectStatus, updateProjectStatus } from "../project-type.service";
 
 export type AddProps = {
@@ -16,10 +16,10 @@ enum StatusEnum {
 }
 
 enum PriorityEnum {
-  priority1 = "Medium",
-  priority2 = "Highest",
-  priority3 = "Low",
-  priority4 = "Lowest",
+  priority1 = "Ưu tiên trung bình",
+  priority2 = "Ưu tiên cao",
+  priority3 = "Ít ưu tiên",
+  priority4 = "Ưu tiên thấp",
 }
 
 interface IFormInput {
@@ -38,7 +38,14 @@ type ProjectFormProps = {
   edit: boolean;
 };
 
-export function ProjectStatusForm({ name, desc, status, edit = false, pId }: ProjectFormProps) {
+export function ProjectStatusForm({
+  name,
+  desc,
+  priority,
+  status,
+  edit = false,
+  pId,
+}: ProjectFormProps) {
   const {
     register,
     reset,
@@ -48,9 +55,12 @@ export function ProjectStatusForm({ name, desc, status, edit = false, pId }: Pro
     defaultValues: {
       name,
       desc,
+      priority: priority as PriorityEnum,
       status: status as StatusEnum,
     },
   });
+
+  const history = useHistory();
 
   function onSubmit(data: AddProps) {
     if (edit) {
@@ -65,30 +75,33 @@ export function ProjectStatusForm({ name, desc, status, edit = false, pId }: Pro
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="border-input">
+    <form onSubmit={handleSubmit(onSubmit)} className="border-input font-light text-gray p-3 ">
       <div className="flex flex-col">
-        <label>Tên</label>
+        <label className="font-normal text-dark text-lg">Tên</label>
         <input
+          className="text-base p-2 py-1 mt-2"
           {...register("name", {
             required: "This is a required",
           })}
           placeholder="Tên dự án"
         />
-        {errors.name && <p className="text-red-500 font-medium mt-2">{errors.name.message}</p>}
+        {errors.name && <p className="text-red-500 font-normal mt-2">{errors.name.message}</p>}
       </div>
       <div className="flex flex-col">
-        <label>Mô tả</label>
+        <label className="font-normal text-dark text-lg mt-3">Mô tả</label>
         <input
+          className="text-base p-2 py-1 mt-2 "
           {...register("desc", {
             required: "This is a required",
           })}
           placeholder="Mô tả"
         />
-        {errors.desc && <p className="text-red-500 font-medium mt-2">{errors.desc.message}</p>}
+        {errors.desc && <p className="text-red-500 font-normal mt-2">{errors.desc.message}</p>}
       </div>
       <div className="flex flex-col">
-        <label>Trạng thái</label>
+        <label className="font-normal text-dark text-lg mt-2">Trạng thái</label>
         <select
+          className="text-base p-2 py-1 border-table-lightGray border"
           {...register("status", {
             required: "This is a required",
           })}
@@ -96,17 +109,22 @@ export function ProjectStatusForm({ name, desc, status, edit = false, pId }: Pro
           <option value={StatusEnum.active}>{StatusEnum.active}</option>
           <option value={StatusEnum.inactive}>{StatusEnum.inactive}</option>
         </select>
-        {errors.status && <p className="text-red-500 font-medium mt-2">{errors.status.message}</p>}
+        {errors.status && <p className="text-red-500 font-normal mt-2">{errors.status.message}</p>}
       </div>
-      <div className="flex justify-end px-3 border-t pt-5">
+      <div className="flex justify-end px-3 pt-5 py-3">
+        <button
+          className="p-2 px-3 text-base font-normal border-primary border text-primary rounded-md mr-2"
+          onClick={() => {
+            history.push("/project-status");
+          }}
+        >
+          Hủy
+        </button>
         <button
           type="submit"
-          className="p-2 px-3  text-white text-sm font-medium bg-warmGray-400 rounded-md mr-2"
+          className="p-2 px-3 text-white text-base  font-normal bg-primary rounded-md"
         >
-          Done
-        </button>
-        <button className="p-2 px-3 text-white text-sm  font-medium bg-lightBlue-500 rounded-md">
-          Create
+          {edit ? "Cập nhật" : "Tạo mới"}
         </button>
       </div>
     </form>

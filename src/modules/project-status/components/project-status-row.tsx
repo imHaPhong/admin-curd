@@ -1,12 +1,27 @@
 import { useCallback, useState } from "react";
-import { AiFillMinusCircle, AiFillPlusCircle } from "react-icons/ai";
-import { Link } from "react-router-dom";
+import {
+  AiFillEdit,
+  AiFillEye,
+  AiFillMinusCircle,
+  AiFillPlusCircle,
+  AiOutlineClose,
+} from "react-icons/ai";
+import { BsTrash } from "react-icons/bs";
+import { Link, useHistory, useLocation } from "react-router-dom";
 import { Modal } from "src/components";
 import { useMedia } from "src/hooks/media-query";
 import { deleteProjectStatus } from "../project-type.service";
-import { ProjectStatus } from "./project-status-table";
 
-export function ProjectStatusRow({ name, desc, status, _id }: ProjectStatus) {
+export interface ProjectType {
+  _id: string;
+  name: string;
+  desc: string;
+  priority: string;
+  status: string;
+}
+
+export function ProjectStatusRow({ name, desc, priority, status, _id }: ProjectType) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [isShow, setIsShow] = useState(false);
   const isMobile = useMedia("(min-width: 768px)");
 
@@ -18,6 +33,9 @@ export function ProjectStatusRow({ name, desc, status, _id }: ProjectStatus) {
     deleteProjectStatus(id);
   }
 
+  const history = useHistory();
+  const location = useLocation();
+
   return (
     <>
       <Modal
@@ -25,17 +43,50 @@ export function ProjectStatusRow({ name, desc, status, _id }: ProjectStatus) {
         onClose={closeModal}
         className="m-3 rounded-md w-full md:w-4/6 max-h-screen xl:w-3/12"
       >
-        <div>
-          <button onClick={() => deleteProjectTypeHandler(_id)}>Xóa</button>
-          <button onClick={closeModal}>Hủy</button>
+        <div className="">
+          <div className="flex justify-between p-3 border-b items-center border-table-lightGray">
+            <span className="font-medium">Xóa</span>
+            <AiOutlineClose className="text-xl cursor-pointer" onClick={closeModal} />
+          </div>
+          <div className="border-b border-table-lightGray p-3 py-4">
+            <p>
+              Bạn có chắc xóa dữ liệu <span className="font-bold">{name}</span> không?
+            </p>
+          </div>
+          <div className="p-3 float-right">
+            <button
+              className="p-4 py-1 border border-primary rounded mr-5 hover:bg-primary hover:text-white duration-300"
+              onClick={closeModal}
+            >
+              Hủy
+            </button>
+            <button
+              className="p-4 py-1 bg-primary rounded text-white"
+              onClick={() => deleteProjectTypeHandler(_id)}
+            >
+              Xóa
+            </button>
+          </div>
         </div>
       </Modal>
       <tr
-        className="border border-r-0 border-l-0 border-gray odd:bg-table"
-        onClick={() => setIsShow((p) => !p)}
+        className="border border-r-0 border-l-0 border-table-lightGray text-base odd:bg-table hover:bg-table-dark font-light cursor-pointer"
+        // onClick={() => setIsShow((p) => !p)}
       >
-        <td className="py-2 flex items-center">
-          {isShow ? <AiFillMinusCircle className="mx-1" /> : <AiFillPlusCircle className="mx-1" />}
+        <td className="py-2 flex items-center px-2">
+          {!isMobile && (
+            <>
+              {isShow ? (
+                <div className="text-table-light">
+                  <AiFillMinusCircle className="mx-1 mr-3 " />
+                </div>
+              ) : (
+                <div className="text-table-light">
+                  <AiFillPlusCircle className="mx-1  mr-3" />
+                </div>
+              )}
+            </>
+          )}
           <span>{name}</span>
         </td>
         <td>{desc}</td>
@@ -43,11 +94,18 @@ export function ProjectStatusRow({ name, desc, status, _id }: ProjectStatus) {
           <>
             <td>{status}</td>
             <td>
-              <div>
+              <div className="flex ">
                 <span>
-                  <Link to={`/project-status/edit/${_id}`}>Sua</Link>
+                  <Link to={`project-status/edit/${_id}`}>
+                    <AiFillEdit />
+                  </Link>
                 </span>
-                <span onClick={openModal}>Xóa</span>
+                <span onClick={openModal} className="mx-5">
+                  <BsTrash />
+                </span>
+                <span onClick={openModal}>
+                  <AiFillEye onClick={() => history.push(`${location.pathname}/${_id}`)} />
+                </span>
               </div>
             </td>
           </>
@@ -61,6 +119,7 @@ export function ProjectStatusRow({ name, desc, status, _id }: ProjectStatus) {
                 <span className="font-bold" style={{ minWidth: "120px" }}>
                   Trọng số ưu tiên
                 </span>
+                <span className="ml-5">{priority}</span>
               </li>
               <li className="flex py-2">
                 <span className="font-bold" style={{ minWidth: "120px" }}>

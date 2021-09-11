@@ -1,8 +1,7 @@
 import classnames from "classnames";
 import { ComponentPropsWithoutRef } from "react";
-import { Link } from "react-router-dom";
-import { routeHomeBase } from "src/constants/routes";
 import { useMedia } from "src/hooks/media-query";
+import { Breadcrumb } from "./breadcrumb";
 import { NavBar } from "./navbar";
 import { Sidebar } from "./sidebar";
 
@@ -27,15 +26,7 @@ export function PageLayout({ children, className, ...rest }: PageLayoutProps) {
             <NavBar />
 
             <div className="w-full md:p-6">
-              <div className="py-2 pb-6">
-                <h1 className="font-medium text-2xl text-dark">Home Page</h1>
-                <div className="font-light">
-                  <Link to={routeHomeBase} className="text-blue-400">
-                    Danh mục
-                  </Link>
-                  / Loại dự án
-                </div>
-              </div>
+              <Breadcrumb />
               {children}
             </div>
           </div>

@@ -1,5 +1,7 @@
 import React from "react";
 import { useForm } from "react-hook-form";
+import { useHistory } from "react-router";
+import { toast } from "react-toastify";
 import { createProjectType, updateProjectType } from "../project-type.service";
 
 export type AddProps = {
@@ -16,10 +18,10 @@ enum StatusEnum {
 }
 
 enum PriorityEnum {
-  priority1 = "Medium",
-  priority2 = "Highest",
-  priority3 = "Low",
-  priority4 = "Lowest",
+  priority1 = "Ưu tiên trung bình",
+  priority2 = "Ưu tiên cao",
+  priority3 = "Ít ưu tiên",
+  priority4 = "Ưu tiên thấp",
 }
 
 interface IFormInput {
@@ -60,14 +62,27 @@ export function ProjectTypeForm({
     },
   });
 
+  const history = useHistory();
+
   function onSubmit(data: AddProps) {
     if (edit) {
-      updateProjectType({
-        ...data,
-        pId,
-      });
+      toast.promise(
+        updateProjectType({
+          ...data,
+          pId,
+        }),
+        {
+          pending: "Đang cập nhật loại dự án",
+          success: "Đã cập nhật dự án thành công",
+          error: "Đã xảy ra lỗi không thể thêm dự án",
+        },
+      );
     } else {
-      createProjectType(data);
+      toast.promise(createProjectType(data), {
+        pending: "Đang thêm dự án",
+        success: "Đã thêm dự án thành công",
+        error: "Đã xảy ra lỗi không thể thêm dự án",
+      });
       reset();
     }
   }
@@ -79,7 +94,7 @@ export function ProjectTypeForm({
         <input
           className="text-base p-2 py-1 mt-2"
           {...register("name", {
-            required: "This is a required",
+            required: "Tên không được để trống",
           })}
           placeholder="Tên dự án"
         />
@@ -90,7 +105,7 @@ export function ProjectTypeForm({
         <input
           className="text-base p-2 py-1 mt-2"
           {...register("desc", {
-            required: "This is a required",
+            required: "Mô tả không được để trống",
           })}
           placeholder="Mô tả"
         />
@@ -100,7 +115,7 @@ export function ProjectTypeForm({
       <div className="flex flex-col">
         <label className="font-normal text-dark text-lg mt-3">Trọng số ưu tiên</label>
         <select
-          className="text-base p-2 py-1"
+          className="text-base p-2 py-1 border border-table-lightGray"
           {...register("priority", {
             required: "This is a required",
           })}
@@ -118,7 +133,7 @@ export function ProjectTypeForm({
       <div className="flex flex-col">
         <label className="font-normal text-dark text-lg mt-2">Trạng thái</label>
         <select
-          className="text-base p-2 py-1"
+          className="text-base p-2 py-1 border-table-lightGray border"
           {...register("status", {
             required: "This is a required",
           })}
@@ -130,13 +145,18 @@ export function ProjectTypeForm({
       </div>
       <div className="flex justify-end px-3 pt-5 py-3">
         <button
-          type="submit"
-          className="p-2 px-3  text-white text-base font-normal bg-warmGray-400 rounded-md mr-2"
+          className="p-2 px-3 text-base font-normal border-primary border text-primary rounded-md mr-2"
+          onClick={() => {
+            history.push("/project-type");
+          }}
         >
-          Done
+          Hủy
         </button>
-        <button className="p-2 px-3 text-white text-base  font-normal bg-lightBlue-500 rounded-md">
-          Create
+        <button
+          type="submit"
+          className="p-2 px-3 text-white text-base  font-normal bg-primary rounded-md"
+        >
+          {edit ? "Cập nhật" : "Tạo mới"}
         </button>
       </div>
     </form>

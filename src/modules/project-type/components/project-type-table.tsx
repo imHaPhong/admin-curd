@@ -1,4 +1,4 @@
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useContext, useEffect, useState } from "react";
 import { Link, useHistory, useLocation } from "react-router-dom";
 import { routeCreateProjectTypeBase } from "src/constants/routes";
 import { useMedia } from "src/hooks/media-query";
@@ -6,6 +6,7 @@ import { apiClientBrowser } from "src/lib/request";
 import { ProjectTypeRow } from "./project-type-row";
 import queryString from "query-string";
 import { FaAngleLeft, FaAngleRight } from "react-icons/fa";
+import { AppContext } from "src/contexts";
 
 export interface ProjectType {
   _id: string;
@@ -17,6 +18,8 @@ export interface ProjectType {
 
 export function ProjectTypeTable() {
   const isMobile = useMedia("(min-width: 768px)");
+  const { setLoading, loading } = useContext(AppContext);
+
   const [listProjectType, setListProjectType] = useState<ProjectType[]>([]);
   const [page, setPage] = useState<number>(1);
 
@@ -27,15 +30,18 @@ export function ProjectTypeTable() {
   useEffect(() => {
     const pageObject: { page?: number; search?: string } = queryString.parse(location.search);
     // eslint-disable-next-line no-console
-    console.log(pageObject);
+    console.log();
     async function getProjectTypes() {
+      setLoading(true);
+      // const projectTypes = await getProjectType(pageObject);
       const projectTypes = await apiClientBrowser.get(
         `http://localhost:8080/project-type?${queryString.stringify(pageObject)}`,
       );
+      setLoading(false);
       setListProjectType(projectTypes.data as ProjectType[]);
     }
     getProjectTypes();
-  }, [location]);
+  }, [location, setLoading]);
 
   function nextHandler() {
     setPage((p) => (p as number) + Number(1));
@@ -89,7 +95,8 @@ export function ProjectTypeTable() {
         </thead>
 
         <tbody>
-          {listProjectType.length > 0 &&
+          {!loading &&
+            listProjectType.length > 0 &&
             listProjectType.map(({ _id, name, status, desc, priority }, index) => (
               <ProjectTypeRow
                 _id={_id}

@@ -12,7 +12,7 @@ interface ProjectType {
   status: string;
 }
 
-export default function CreateProjectStatusPage() {
+export default function EditProjectTypePage() {
   const { id }: { id: string } = useParams();
 
   const [projectTypeData, setProjectTypeData] = useState<ProjectType>();
@@ -23,8 +23,6 @@ export default function CreateProjectStatusPage() {
         `http://localhost:8080/project-type/${id}`,
       );
       setProjectTypeData(projectTypeInfo.data as ProjectType);
-      // eslint-disable-next-line no-console
-      console.log(projectTypeInfo);
     }
 
     getProjectType();

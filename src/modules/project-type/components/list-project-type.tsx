@@ -2,11 +2,12 @@ import { FormEvent, useContext, useEffect, useState } from "react";
 import { Link, useHistory, useLocation } from "react-router-dom";
 import { routeCreateProjectTypeBase } from "src/constants/routes";
 import { useMedia } from "src/hooks/media-query";
-import { apiClientBrowser } from "src/lib/request";
 import { ProjectTypeRow } from "./project-type-row";
 import queryString from "query-string";
 import { FaAngleLeft, FaAngleRight } from "react-icons/fa";
 import { AppContext } from "src/contexts";
+import { getProjectType } from "../project-type.service";
+import useDebounce from "src/hooks/useDebounce";
 
 export interface ProjectType {
   _id: string;
@@ -16,7 +17,7 @@ export interface ProjectType {
   status: string;
 }
 
-export function ProjectTypeTable() {
+export function ListProjectType() {
   const isMobile = useMedia("(min-width: 768px)");
   const { setLoading, loading } = useContext(AppContext);
 
@@ -24,21 +25,20 @@ export function ProjectTypeTable() {
   const [page, setPage] = useState<number>(1);
 
   const [search, setSearch] = useState("");
+  const debouncedValue = useDebounce<string>(search, 500);
 
   const location = useLocation();
   const history = useHistory();
   useEffect(() => {
-    const pageObject: { page?: number; search?: string } = queryString.parse(location.search);
-    // eslint-disable-next-line no-console
-    console.log();
+    const pageObject: { page?: string; search?: string } = queryString.parse(location.search);
     async function getProjectTypes() {
       setLoading(true);
-      // const projectTypes = await getProjectType(pageObject);
-      const projectTypes = await apiClientBrowser.get(
-        `http://localhost:8080/project-type?${queryString.stringify(pageObject)}`,
-      );
+      const projectTypes = await getProjectType(pageObject);
+      // const projectTypes = await apiClientBrowser.get(
+      //   `http://localhost:8080/project-type?${queryString.stringify(pageObject)}`,
+      // );
       setLoading(false);
-      setListProjectType(projectTypes.data as ProjectType[]);
+      setListProjectType(projectTypes as ProjectType[]);
     }
     getProjectTypes();
   }, [location, setLoading]);
@@ -53,17 +53,28 @@ export function ProjectTypeTable() {
     history.push(`?page=${Number(page) - 1}`);
   }
 
-  function userInputHandler(ev: FormEvent<HTMLInputElement>) {
+  useEffect(() => {
+    async function getProjectTypes() {
+      const projectTypes = await getProjectType({ search });
+      // const projectTypes = await apiClientBrowser.get(
+      //   `http://localhost:8080/project-type?${queryString.stringify(pageObject)}`,
+      // );
+      setListProjectType(projectTypes as ProjectType[]);
+    }
+    getProjectTypes();
     const pageObject: { page?: number; search?: string } = queryString.parse(location.search);
-    setSearch(ev.currentTarget.value.trim());
     const a = {
       ...pageObject,
-      search: ev.currentTarget.value.trim(),
+      search: search.trim(),
+      page: 1,
     };
-    // if (ev.currentTarget.value.trim() === "") {
-    //   a.search = null;
-    // }
+
     history.push(`?${queryString.stringify(a)}`);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedValue]);
+
+  function userInputHandler(ev: FormEvent<HTMLInputElement>) {
+    setSearch(ev.currentTarget.value.trim());
   }
 
   return (
@@ -76,7 +87,7 @@ export function ProjectTypeTable() {
       <input
         onChange={userInputHandler}
         value={search}
-        placeholder="Search..."
+        placeholder="Tìm kiếm..."
         className="border border-table-lightGray p-1 px-3 text-sm focus:outline-none rounded-sm focus:border-primary"
       />
       <table className="text-sm border-t-0 w-full md:text-lg mt-2">

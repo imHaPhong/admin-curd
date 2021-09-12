@@ -1,14 +1,24 @@
 import { config } from "src/constants/config";
 import { apiClientBrowser } from "src/lib/request";
-import { CreateProjectTypeRespone } from "./project-type.type";
+import { CreateProjectTypeRespone, ProjectTypeRespone } from "./project-type.type";
 
-const apiAuthUrl = `${config.apiBaseUrl}/api/auth`;
+const apiProjectTypeUrl = `${config.apiBaseUrl}project-type`;
 
-export async function getProjectType(name?: string) {
+export async function getProjectType({
+  name,
+  search,
+  page,
+}: {
+  name?: string;
+  search?: string;
+  page?: string;
+}) {
   try {
-    const res = await apiClientBrowser.get("http://localhost:8080/project-type", {
+    const res = await apiClientBrowser.get(apiProjectTypeUrl, {
       params: {
         name,
+        search,
+        page,
       },
     });
     return res.data;
@@ -19,19 +29,19 @@ export async function getProjectType(name?: string) {
 
 export async function createProjectType(projectType: CreateProjectTypeRespone) {
   // eslint-disable-next-line no-console
-  console.log(apiAuthUrl);
+  console.log(apiProjectTypeUrl);
   try {
-    const res = await apiClientBrowser.post("http://localhost:8080/project-type", projectType);
-    return res.data as CreateProjectTypeRespone;
+    const res = await apiClientBrowser.post(apiProjectTypeUrl, projectType);
+    return res.data as ProjectTypeRespone;
   } catch (err) {
     console.error(err);
   }
 }
 export async function updateProjectType(projectType: CreateProjectTypeRespone) {
   // eslint-disable-next-line no-console
-  console.log(apiAuthUrl);
+  console.log(apiProjectTypeUrl);
   try {
-    const res = await apiClientBrowser.put("http://localhost:8080/project-type", projectType);
+    const res = await apiClientBrowser.put(apiProjectTypeUrl, projectType);
     return res.data as CreateProjectTypeRespone;
   } catch (err) {
     console.error(err);
@@ -39,9 +49,9 @@ export async function updateProjectType(projectType: CreateProjectTypeRespone) {
 }
 export async function deleteProjectType(id: string) {
   // eslint-disable-next-line no-console
-  console.log(apiAuthUrl);
+  console.log(apiProjectTypeUrl);
   try {
-    const res = await apiClientBrowser.delete("http://localhost:8080/project-type", {
+    const res = await apiClientBrowser.delete(apiProjectTypeUrl, {
       data: {
         id,
       },

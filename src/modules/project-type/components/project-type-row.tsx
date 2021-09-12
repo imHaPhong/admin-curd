@@ -11,7 +11,7 @@ import { Link, useHistory, useLocation } from "react-router-dom";
 import { Modal } from "src/components";
 import { useMedia } from "src/hooks/media-query";
 import { deleteProjectType } from "../project-type.service";
-import { ProjectType } from "./project-type-table";
+import { ProjectType } from "./list-project-type";
 
 export function ProjectTypeRow({ name, desc, priority, status, _id }: ProjectType) {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -36,17 +36,6 @@ export function ProjectTypeRow({ name, desc, priority, status, _id }: ProjectTyp
         onClose={closeModal}
         className="m-3 rounded-md w-full md:w-4/6 max-h-screen xl:w-3/12"
       >
-        {/* <div className="flex flex-col h-full">
-        <div className="my-3 flex justify-between">
-          <div className="px-3 flex pb-5 border-b w-full justify-between items-center">
-            <h5 className="font-bold text-xl">{modalTitle}</h5>
-            <AiOutlineClose className="text-xl cursor-pointer" onClick={onClose}/>
-          </div>
-        </div>
-        <div className="flex-1 overflow-y-scroll md:max-h-3/4 xl:max-h-3/4 px-3 pb-5">
-          {children}
-        </div>
-      </div> */}
         <div className="">
           <div className="flex justify-between p-3 border-b items-center border-table-lightGray">
             <span className="font-medium">Xóa</span>
@@ -59,7 +48,7 @@ export function ProjectTypeRow({ name, desc, priority, status, _id }: ProjectTyp
           </div>
           <div className="p-3 float-right">
             <button
-              className="p-4 py-1 border border-primary rounded mr-5 hover:bg-primary hover:text-white duration-300"
+              className="p-4 py-1 border border-primary rounded mr-5 hover:bg-primary text-primary hover:text-white duration-300"
               onClick={closeModal}
             >
               Hủy
@@ -74,7 +63,7 @@ export function ProjectTypeRow({ name, desc, priority, status, _id }: ProjectTyp
         </div>
       </Modal>
       <tr
-        className="border border-r-0 border-l-0 border-table-lightGray text-base odd:bg-table hover:bg-table-dark font-light cursor-pointer"
+        className="border border-r-0 border-l-0 border-table-lightGray text-base odd:bg-table  hover:bg-table-dark font-light cursor-pointer"
         // onClick={() => setIsShow((p) => !p)}
       >
         <td className="py-2 flex items-center px-2">
@@ -93,7 +82,15 @@ export function ProjectTypeRow({ name, desc, priority, status, _id }: ProjectTyp
           )}
           <span>{name}</span>
         </td>
-        <td>{desc}</td>
+        <td className="bg-current">
+          {desc}
+          {/* <textarea
+            readOnly
+            className="w-5/6 odd:bg-table hover:bg-table-dark focus:outline-none resize-none"
+          >
+            {desc}
+          </textarea> */}
+        </td>
         {isMobile && (
           <>
             <td>{priority}</td>

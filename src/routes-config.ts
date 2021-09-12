@@ -47,17 +47,17 @@ export const routesConfig = [
   {
     path: routeProjectTypeBase,
     exact: true,
-    component: loadable(lazy(() => import("./pages/project-type"))),
+    component: loadable(lazy(() => import("./pages/project-types"))),
   },
   {
     path: routeCreateProjectTypeBase,
     exact: true,
-    component: loadable(lazy(() => import("./pages/create-project-type"))),
+    component: loadable(lazy(() => import("./pages/project-types/create-project-type"))),
   },
   {
     path: routeEditProjectTypeBase,
     exact: false,
-    component: loadable(lazy(() => import("./pages/edit-project-type"))),
+    component: loadable(lazy(() => import("./pages/project-types/edit-project-type"))),
   },
   {
     path: routeProjectStatusBase,

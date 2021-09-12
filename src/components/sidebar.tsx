@@ -1,5 +1,14 @@
 import { ReactNode } from "react";
 import { Link, useRouteMatch } from "react-router-dom";
+import {
+  routeCustomerGroupBase,
+  routeDepartmentBase,
+  routeEmployeeBase,
+  routeProjectBase,
+  routeProjectStatusBase,
+  routeProjectTypeBase,
+  routeTechStackBase,
+} from "src/constants/routes";
 
 type SidebarProps = {
   isShow: boolean;
@@ -34,26 +43,26 @@ export function Sidebar({ isShow }: SidebarProps) {
         <ul className="mt-5 text-base font-light">
           <li className="font-normal mb-2 uppercase">Danh mục</li>
           <li>
-            <CustomLink to="/project-type">Loại dự án</CustomLink>
+            <CustomLink to={routeProjectTypeBase}>Loại dự án</CustomLink>
           </li>
           <li>
-            <CustomLink to="/project-status">Trạng thái dự án</CustomLink>
+            <CustomLink to={routeProjectStatusBase}>Trạng thái dự án</CustomLink>
           </li>
           <li>
-            <CustomLink to="/tech-stack">Tech Stack</CustomLink>
+            <CustomLink to={routeTechStackBase}>Tech Stack</CustomLink>
           </li>
           <li>
-            <CustomLink to="/customer-group">Nhóm khách hàng</CustomLink>
+            <CustomLink to={routeCustomerGroupBase}>Nhóm khách hàng</CustomLink>
           </li>
           <li className="font-normal mt-5 mb-2 uppercase">Quản lý</li>
           <li>
-            <CustomLink to="/department">Trung tâm, bộ phận, phòng ban </CustomLink>
+            <CustomLink to={routeDepartmentBase}>Trung tâm, bộ phận, phòng ban </CustomLink>
           </li>
           <li>
-            <CustomLink to="/employee">Nhân sự </CustomLink>
+            <CustomLink to={routeEmployeeBase}>Nhân sự </CustomLink>
           </li>
           <li>
-            <CustomLink to="/project">Dự án</CustomLink>
+            <CustomLink to={routeProjectBase}>Dự án</CustomLink>
           </li>
           <li className="font-normal mt-5 mb-2 uppercase">Báo cáo</li>
           <li>Số lượng dự án</li>

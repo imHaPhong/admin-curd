@@ -4,15 +4,15 @@ import { useLocation } from "react-router";
 import { routesPath } from "src/constants/routes-path";
 
 function pathnameToBreadcrum(pathname: string[]) {
-  const currentPath = routesPath.find((el) => el.path === pathname[1]);
+  const currentPath = routesPath.find((el) => el.path === pathname[2]);
   switch (pathname.length - 1) {
-    case 1:
+    case 2:
       return (
         <>
           <h1 className="font-medium text-2xl text-dark"> {currentPath?.pathName}</h1>
 
           <div className="flex">
-            <Link to={`/${currentPath?.path}`} className="text-blue-400">
+            <Link to={`/${pathname[1]}/${currentPath?.path}`} className="text-blue-400">
               {currentPath?.pathTitle}
             </Link>
             <span className="block mx-2">/</span>
@@ -20,8 +20,8 @@ function pathnameToBreadcrum(pathname: string[]) {
           </div>
         </>
       );
-    case 2:
     case 3:
+    case 4:
       return (
         <>
           <h1 className="font-medium text-2xl text-dark">
@@ -33,7 +33,7 @@ function pathnameToBreadcrum(pathname: string[]) {
               {currentPath?.pathTitle}
             </Link>
             <span className="block mx-2">/</span>
-            <Link to={`/${currentPath?.path}`} className="text-blue-400">
+            <Link to={`/${pathname[1]}/${currentPath?.path}`} className="text-blue-400">
               {currentPath?.pathName}
             </Link>
             <span className="block mx-2">/</span>

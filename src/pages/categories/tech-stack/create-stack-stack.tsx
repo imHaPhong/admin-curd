@@ -1,7 +1,7 @@
 import { PageLayout } from "src/components";
 import { TechstackForm } from "src/modules/tech-stack";
 
-export default function CreateProjectStatusPage() {
+export default function CreateTechstackPage() {
   return (
     <div className="w-full">
       <main className="w-full flex flex-wrap justify-center ">

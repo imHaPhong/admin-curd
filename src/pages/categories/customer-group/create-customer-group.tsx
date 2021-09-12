@@ -1,7 +1,7 @@
 import { PageLayout } from "src/components";
 import { CustomerGroupForm } from "src/modules/customer-group";
 
-export default function CreateProjectStatusPage() {
+export default function CreateCustomerGroupPage() {
   return (
     <div className="w-full">
       <main className="w-full flex flex-wrap justify-center ">

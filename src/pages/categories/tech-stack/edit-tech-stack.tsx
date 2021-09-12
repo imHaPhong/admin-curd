@@ -12,7 +12,7 @@ interface ProjectType {
   status: string;
 }
 
-export default function CreateProjectStatusPage() {
+export default function EditTechstackPage() {
   const { id }: { id: string } = useParams();
 
   const [projectTypeData, setProjectTypeData] = useState<ProjectType>();

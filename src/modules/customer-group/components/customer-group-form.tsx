@@ -1,7 +1,7 @@
 import React from "react";
 import { useForm } from "react-hook-form";
 import { useHistory } from "react-router";
-import { createCustomergroup, updateCustomergroup } from "../project-type.service";
+import { createCustomergroup, updateCustomergroup } from "../customer-group.service";
 
 export type AddProps = {
   name: string;
@@ -67,7 +67,7 @@ export function CustomerGroupForm({
     if (edit) {
       updateCustomergroup({
         ...data,
-        pId,
+        _id: pId,
       });
     } else {
       createCustomergroup(data);

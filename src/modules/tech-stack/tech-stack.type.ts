@@ -1,5 +1,5 @@
 export type CreateTechstackRespone = {
-  pId?: string;
+  _id?: string;
   name: string;
   desc: string;
   status: string;

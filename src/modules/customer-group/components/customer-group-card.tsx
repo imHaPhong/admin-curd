@@ -1,19 +1,19 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router";
 import { apiClientBrowser } from "src/lib/request";
-import { ProjectType } from "..";
+import { CustomerGroupType } from "..";
 
 export function CustomerGroupCard() {
   const { id }: { id: string } = useParams();
 
-  const [projectTypeData, setProjectTypeData] = useState<ProjectType>();
+  const [projectTypeData, setProjectTypeData] = useState<CustomerGroupType>();
 
   useEffect(() => {
     async function getProjectType() {
       const projectTypeInfo = await apiClientBrowser.get(
         `http://localhost:8080/project-type/${id}`,
       );
-      setProjectTypeData(projectTypeInfo.data as ProjectType);
+      setProjectTypeData(projectTypeInfo.data as CustomerGroupType);
     }
 
     getProjectType();

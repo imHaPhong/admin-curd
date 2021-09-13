@@ -1,7 +1,9 @@
 import React from "react";
 import { useForm } from "react-hook-form";
 import { useHistory } from "react-router";
-import { createTechstack, updateTechstack } from "../project-type.service";
+import { toast } from "react-toastify";
+import { routeTechStackBase } from "src/constants/routes";
+import { createTechstack, updateTechstack } from "../tech-stack.service";
 
 export type AddProps = {
   name: string;
@@ -63,18 +65,67 @@ export function TechstackForm({
 
   const history = useHistory();
 
-  function onSubmit(data: AddProps) {
+  async function onSubmit(data: AddProps) {
+    const toastId = toast.loading("Xin đợi...");
+
     if (edit) {
-      updateTechstack({
-        ...data,
-        pId,
-      });
+      try {
+        toast.update(toastId, {
+          render: "Đang tạo trạng thái dự án",
+          type: "warning",
+          isLoading: true,
+        });
+        await updateTechstack({
+          ...data,
+          _id: pId,
+        });
+        toast.update(toastId, {
+          render: "Tạo mới thành công",
+          type: "success",
+          isLoading: false,
+          autoClose: 500,
+        });
+
+        setTimeout(() => {
+          history.push(`${routeTechStackBase}`);
+        }, 300);
+      } catch (error) {
+        toast.update(toastId, {
+          render: "Đã xảy ra lỗi không thể thêm trạng thái dự án",
+          type: "error",
+          isLoading: false,
+          autoClose: 500,
+        });
+      }
     } else {
-      createTechstack(data);
+      try {
+        toast.update(toastId, {
+          render: "Đang tạo trạng thái dự án",
+          type: "warning",
+          isLoading: true,
+        });
+        const projectStatusResponse = await createTechstack(data);
+        toast.update(toastId, {
+          render: "Tạo mới thành công",
+          type: "success",
+          isLoading: false,
+          autoClose: 500,
+        });
+        setTimeout(() => {
+          history.push(`${routeTechStackBase}/${projectStatusResponse?._id}`);
+        }, 300);
+        reset();
+      } catch (error) {
+        toast.update(toastId, {
+          render: "Đã xảy ra lỗi không thể thêm trạng thái dự án",
+          type: "error",
+          isLoading: false,
+          autoClose: 500,
+        });
+      }
       reset();
     }
   }
-
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="border-input font-light text-gray p-3 ">
       <div className="flex flex-col">
@@ -90,28 +141,44 @@ export function TechstackForm({
       </div>
       <div className="flex flex-col">
         <label className="font-normal text-dark text-lg mt-3">Mô tả</label>
-        <input
-          className="text-base p-2 py-1 mt-2"
+        <textarea
+          rows={4}
+          cols={50}
+          className="text-base p-2 py-1 mt-2 border border-table-lightGray resize-none"
           {...register("desc", {
-            required: "This is a required",
+            required: "Mô tả không được để trống",
           })}
           placeholder="Mô tả"
         />
         {errors.desc && <p className="text-red-500 font-normal mt-2">{errors.desc.message}</p>}
       </div>
-      <div className="flex flex-col">
-        <label className="font-normal text-dark text-lg mt-2">Trạng thái</label>
-        <select
-          className="text-base p-2 py-1 border-table-lightGray border"
-          {...register("status", {
-            required: "This is a required",
-          })}
-        >
-          <option value={StatusEnum.active}>{StatusEnum.active}</option>
-          <option value={StatusEnum.inactive}>{StatusEnum.inactive}</option>
-        </select>
-        {errors.status && <p className="text-red-500 font-normal mt-2">{errors.status.message}</p>}
+      <div className="font-normal text-dark text-lg mt-3">Trạng thái </div>
+      <div className="">
+        <input
+          {...register("status", { required: "Cần chọn trạng thái" })}
+          type="radio"
+          value="Active"
+          id="radio-active"
+          className="mr-2"
+        />
+        <label className="font-normal text-dark text-lg mt-3" htmlFor="radio-active">
+          Active
+        </label>
       </div>
+
+      <div>
+        <input
+          {...register("status", { required: "Cần chọn trạng thái" })}
+          type="radio"
+          className="mr-2"
+          value="Inactive"
+          id="radio-inactive"
+        />
+        <label className="font-normal text-dark text-lg mt-3" htmlFor="radio-inactive">
+          Inactive
+        </label>
+      </div>
+      {errors.status && <p className="text-red-500 font-normal mt-2">{errors.status.message}</p>}
       <div className="flex justify-end px-3 pt-5 py-3">
         <button
           className="p-2 px-3 text-base font-normal border-primary border text-primary rounded-md mr-2"

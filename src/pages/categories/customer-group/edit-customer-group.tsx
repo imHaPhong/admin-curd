@@ -5,7 +5,7 @@ import { config } from "src/constants/config";
 import { apiClientBrowser } from "src/lib/request";
 import { ProjectStatusForm } from "src/modules/project-status";
 
-interface ProjectStatusType {
+interface CustomerGroupType {
   _id: string;
   name: string;
   desc: string;
@@ -13,18 +13,18 @@ interface ProjectStatusType {
   status: string;
 }
 
-export default function EditProjectStatusPage() {
+export default function EditCustomerGroupPage() {
   const { id }: { id: string } = useParams();
 
-  const [projectStatusData, setProjectStatusData] = useState<ProjectStatusType>();
+  const [customerGroupData, setCustomerGroupData] = useState<CustomerGroupType>();
 
   useEffect(() => {
-    async function fetchProjectStatusData() {
-      const projectStatus = await apiClientBrowser.get(`${config.apiBaseUrl}project-status/${id}`);
-      setProjectStatusData(projectStatus.data as ProjectStatusType);
+    async function fetchCustomerGroupData() {
+      const customerGroup = await apiClientBrowser.get(`${config.apiBaseUrl}customer-group/${id}`);
+      setCustomerGroupData(customerGroup.data as CustomerGroupType);
     }
 
-    fetchProjectStatusData();
+    fetchCustomerGroupData();
   }, [id]);
 
   return (
@@ -32,12 +32,12 @@ export default function EditProjectStatusPage() {
       <main className="w-full flex flex-wrap justify-center ">
         <PageLayout>
           <div className="bg-white">
-            {projectStatusData && (
+            {customerGroupData && (
               <ProjectStatusForm
                 edit={true}
-                name={projectStatusData?.name}
-                desc={projectStatusData?.desc}
-                status={projectStatusData?.status}
+                name={customerGroupData?.name}
+                desc={customerGroupData?.desc}
+                status={customerGroupData?.status}
                 pId={id}
               />
             )}

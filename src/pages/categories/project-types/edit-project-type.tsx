@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { PageLayout } from "src/components";
+import { config } from "src/constants/config";
 import { apiClientBrowser } from "src/lib/request";
 import { ProjectTypeForm } from "src/modules/project-type/components/project-type-form";
 
@@ -19,9 +20,7 @@ export default function EditProjectTypePage() {
 
   useEffect(() => {
     async function getProjectType() {
-      const projectTypeInfo = await apiClientBrowser.get(
-        `http://localhost:8080/project-type/${id}`,
-      );
+      const projectTypeInfo = await apiClientBrowser.get(`${config.apiBaseUrl}project-type/${id}`);
       setProjectTypeData(projectTypeInfo.data as ProjectType);
     }
 

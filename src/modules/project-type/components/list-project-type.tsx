@@ -2,7 +2,7 @@ import { FormEvent, useContext, useEffect, useState } from "react";
 import { Link, useHistory, useLocation } from "react-router-dom";
 import { routeCreateProjectTypeBase } from "src/constants/routes";
 import { useMedia } from "src/hooks/media-query";
-import { ProjectTypeRow } from "./project-type-row";
+import { ProjectTypeRow } from "./project-type-item";
 import queryString from "query-string";
 import { FaAngleLeft, FaAngleRight } from "react-icons/fa";
 import { AppContext } from "src/contexts";
@@ -34,9 +34,6 @@ export function ListProjectType() {
     async function getProjectTypes() {
       setLoading(true);
       const projectTypes = await getProjectType(pageObject);
-      // const projectTypes = await apiClientBrowser.get(
-      //   `http://localhost:8080/project-type?${queryString.stringify(pageObject)}`,
-      // );
       setLoading(false);
       setListProjectType(projectTypes as ProjectType[]);
     }
@@ -56,9 +53,6 @@ export function ListProjectType() {
   useEffect(() => {
     async function getProjectTypes() {
       const projectTypes = await getProjectType({ search });
-      // const projectTypes = await apiClientBrowser.get(
-      //   `http://localhost:8080/project-type?${queryString.stringify(pageObject)}`,
-      // );
       setListProjectType(projectTypes as ProjectType[]);
     }
     getProjectTypes();

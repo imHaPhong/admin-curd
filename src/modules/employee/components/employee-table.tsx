@@ -66,7 +66,7 @@ export function EmployeeTabel() {
       <input
         onChange={userInputHandler}
         value={search}
-        placeholder="Search..."
+        placeholder="Tìm kiếm..."
         className="border border-table-lightGray p-1 px-3 text-sm focus:outline-none rounded-sm focus:border-primary"
       />
       <table className="text-sm border-t-0 w-full md:text-lg mt-2">

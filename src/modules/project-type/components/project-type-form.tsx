@@ -2,6 +2,7 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import { useHistory } from "react-router";
 import { toast } from "react-toastify";
+import { routeProjectTypeBase } from "src/constants/routes";
 import { createProjectType, updateProjectType } from "../project-type.service";
 
 export type AddProps = {
@@ -64,20 +65,34 @@ export function ProjectTypeForm({
 
   const history = useHistory();
   async function onSubmit(data: AddProps) {
+    const toastId = toast.loading("Xin đợi...");
+
     if (edit) {
-      toast.promise(
-        updateProjectType({
+      try {
+        toast.update(toastId, { render: "Đang tạo loại dự án", type: "warning", isLoading: true });
+        await updateProjectType({
           ...data,
           pId,
-        }),
-        {
-          pending: "Đang cập nhật loại dự án",
-          success: "Đã cập nhật dự án thành công",
-          error: "Đã xảy ra lỗi không thể thêm dự án",
-        },
-      );
+        });
+        toast.update(toastId, {
+          render: "Tạo mới thành công",
+          type: "success",
+          isLoading: false,
+          autoClose: 500,
+        });
+        setTimeout(() => {
+          history.push(`${routeProjectTypeBase}`);
+        }, 300);
+        reset();
+      } catch (error) {
+        toast.update(toastId, {
+          render: "Đã xảy ra lỗi không thể thêm dự án",
+          type: "error",
+          isLoading: false,
+          autoClose: 500,
+        });
+      }
     } else {
-      const toastId = toast.loading("Please wait...");
       try {
         toast.update(toastId, { render: "Đang tạo loại dự án", type: "warning", isLoading: true });
         const projectTypeResponse = await createProjectType(data);
@@ -88,7 +103,7 @@ export function ProjectTypeForm({
           autoClose: 500,
         });
         setTimeout(() => {
-          history.push(`/project-type/${projectTypeResponse?._id}`);
+          history.push(`${routeProjectTypeBase}/${projectTypeResponse?._id}`);
         }, 300);
         reset();
       } catch (error) {
@@ -153,7 +168,7 @@ export function ProjectTypeForm({
         <div className="font-normal text-dark text-lg mt-3">Trạng thái </div>
         <div className="">
           <input
-            {...register("status", { required: true })}
+            {...register("status", { required: "Cần chọn trạng thái" })}
             type="radio"
             value="Active"
             id="radio-active"
@@ -166,7 +181,7 @@ export function ProjectTypeForm({
 
         <div>
           <input
-            {...register("status", { required: true })}
+            {...register("status", { required: "Cần chọn trạng thái" })}
             type="radio"
             className="mr-2"
             value="Inactive"
@@ -176,12 +191,12 @@ export function ProjectTypeForm({
             Inactive
           </label>
         </div>
-
+        {errors.status && <p className="text-red-500 font-normal mt-2">{errors.status.message}</p>}
         <div className="flex justify-end px-3 pt-5 py-3">
           <button
             className="p-2 px-3 text-base font-normal border-primary border text-primary rounded-md mr-2"
             onClick={() => {
-              history.push("/project-type");
+              history.push(routeProjectTypeBase);
             }}
           >
             Hủy

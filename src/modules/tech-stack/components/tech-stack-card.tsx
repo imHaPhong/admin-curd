@@ -1,17 +1,17 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router";
 import { apiClientBrowser } from "src/lib/request";
-import { ProjectType } from "..";
+import { TechstackType } from "..";
 
 export function TechstackCard() {
   const { id }: { id: string } = useParams();
 
-  const [projectTypeData, setProjectTypeData] = useState<ProjectType>();
+  const [projectTypeData, setProjectTypeData] = useState<TechstackType>();
 
   useEffect(() => {
     async function getProjectType() {
       const projectTypeInfo = await apiClientBrowser.get(`http://localhost:8080/tech-stack/${id}`);
-      setProjectTypeData(projectTypeInfo.data as ProjectType);
+      setProjectTypeData(projectTypeInfo.data as TechstackType);
     }
 
     getProjectType();

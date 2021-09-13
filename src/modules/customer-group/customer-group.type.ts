@@ -1,5 +1,5 @@
-export type CreateProjectTypeRespone = {
-  pId?: string;
+export type CreateCustomerGroupResponseType = {
+  _id?: string;
   name: string;
   desc: string;
   status: string;

@@ -10,10 +10,17 @@ import { BsTrash } from "react-icons/bs";
 import { Link, useHistory, useLocation } from "react-router-dom";
 import { Modal } from "src/components";
 import { useMedia } from "src/hooks/media-query";
-import { deleteTechstack } from "../project-type.service";
-import { ProjectType } from "./tech-stack-table";
+import { deleteProjectStatus } from "../project-status.service";
 
-export function TechstackRow({ name, desc, priority, status, _id }: ProjectType) {
+export interface ProjectType {
+  _id: string;
+  name: string;
+  desc: string;
+  priority: string;
+  status: string;
+}
+
+export function ProjectStatusRow({ name, desc, priority, status, _id }: ProjectType) {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [isShow, setIsShow] = useState(false);
   const isMobile = useMedia("(min-width: 768px)");
@@ -23,7 +30,7 @@ export function TechstackRow({ name, desc, priority, status, _id }: ProjectType)
   const closeModal = useCallback(() => setModalOpen(false), []);
 
   function deleteProjectTypeHandler(id: string) {
-    deleteTechstack(id);
+    deleteProjectStatus(id);
   }
 
   const history = useHistory();
@@ -89,7 +96,7 @@ export function TechstackRow({ name, desc, priority, status, _id }: ProjectType)
             <td>
               <div className="flex ">
                 <span>
-                  <Link to={`tech-stack/edit/${_id}`}>
+                  <Link to={`project-status/edit/${_id}`}>
                     <AiFillEdit />
                   </Link>
                 </span>

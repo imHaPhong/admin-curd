@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { PageLayout } from "src/components";
+import { config } from "src/constants/config";
 import { apiClientBrowser } from "src/lib/request";
 import { TechstackForm } from "src/modules/tech-stack";
 
-interface ProjectType {
+interface TechstackType {
   _id: string;
   name: string;
   desc: string;
@@ -15,17 +16,15 @@ interface ProjectType {
 export default function EditTechstackPage() {
   const { id }: { id: string } = useParams();
 
-  const [projectTypeData, setProjectTypeData] = useState<ProjectType>();
+  const [techstackData, setTechstackData] = useState<TechstackType>();
 
   useEffect(() => {
-    async function getProjectType() {
-      const projectTypeInfo = await apiClientBrowser.get(`http://localhost:8080/tech-stack/${id}`);
-      setProjectTypeData(projectTypeInfo.data as ProjectType);
-      // eslint-disable-next-line no-console
-      console.log(projectTypeInfo);
+    async function fetchTechstackData() {
+      const techstack = await apiClientBrowser.get(`${config.apiBaseUrl}tech-stack/${id}`);
+      setTechstackData(techstack.data as TechstackType);
     }
 
-    getProjectType();
+    fetchTechstackData();
   }, [id]);
 
   return (
@@ -33,13 +32,13 @@ export default function EditTechstackPage() {
       <main className="w-full flex flex-wrap justify-center ">
         <PageLayout>
           <div className="bg-white">
-            {projectTypeData && (
+            {techstackData && (
               <TechstackForm
                 edit={true}
-                name={projectTypeData?.name}
-                desc={projectTypeData?.desc}
-                priority={projectTypeData?.priority}
-                status={projectTypeData?.status}
+                name={techstackData?.name}
+                desc={techstackData?.desc}
+                priority={techstackData?.priority}
+                status={techstackData?.status}
                 pId={id}
               />
             )}

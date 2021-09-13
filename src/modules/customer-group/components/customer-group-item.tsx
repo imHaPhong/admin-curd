@@ -10,10 +10,10 @@ import { BsTrash } from "react-icons/bs";
 import { Link, useHistory, useLocation } from "react-router-dom";
 import { Modal } from "src/components";
 import { useMedia } from "src/hooks/media-query";
-import { deleteCustomergroup } from "../project-type.service";
-import { ProjectType } from "./customer-group-table";
+import { deleteCustomergroup } from "../customer-group.service";
+import { CustomerGroupType } from "./list-customer-group";
 
-export function CustomerGroupRow({ name, desc, priority, status, _id }: ProjectType) {
+export function CustomerGroupRow({ name, desc, priority, status, _id }: CustomerGroupType) {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [isShow, setIsShow] = useState(false);
   const isMobile = useMedia("(min-width: 768px)");

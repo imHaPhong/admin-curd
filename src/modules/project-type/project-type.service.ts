@@ -28,8 +28,6 @@ export async function getProjectType({
 }
 
 export async function createProjectType(projectType: CreateProjectTypeRespone) {
-  // eslint-disable-next-line no-console
-  console.log(apiProjectTypeUrl);
   try {
     const res = await apiClientBrowser.post(apiProjectTypeUrl, projectType);
     return res.data as ProjectTypeRespone;
@@ -38,8 +36,6 @@ export async function createProjectType(projectType: CreateProjectTypeRespone) {
   }
 }
 export async function updateProjectType(projectType: CreateProjectTypeRespone) {
-  // eslint-disable-next-line no-console
-  console.log(apiProjectTypeUrl);
   try {
     const res = await apiClientBrowser.put(apiProjectTypeUrl, projectType);
     return res.data as CreateProjectTypeRespone;
@@ -48,8 +44,6 @@ export async function updateProjectType(projectType: CreateProjectTypeRespone) {
   }
 }
 export async function deleteProjectType(id: string) {
-  // eslint-disable-next-line no-console
-  console.log(apiProjectTypeUrl);
   try {
     const res = await apiClientBrowser.delete(apiProjectTypeUrl, {
       data: {

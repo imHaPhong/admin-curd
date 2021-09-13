@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import { PageLayout } from "src/components";
 import { config } from "src/constants/config";
 import { apiClientBrowser } from "src/lib/request";
-import { ProjectStatusForm } from "src/modules/project-status";
+import { CustomerGroupForm } from "src/modules/customer-group";
 
 interface CustomerGroupType {
   _id: string;
@@ -33,7 +33,7 @@ export default function EditCustomerGroupPage() {
         <PageLayout>
           <div className="bg-white">
             {customerGroupData && (
-              <ProjectStatusForm
+              <CustomerGroupForm
                 edit={true}
                 name={customerGroupData?.name}
                 desc={customerGroupData?.desc}

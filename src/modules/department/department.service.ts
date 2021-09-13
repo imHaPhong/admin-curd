@@ -1,12 +1,13 @@
 import { config } from "src/constants/config";
 import { apiClientBrowser } from "src/lib/request";
-import { CreateProjectTypeRespone } from "../project-type/project-type.type";
+import { CreateProjectTypeRespone, ProjectTypeRespone } from "../project-type/project-type.type";
+import { Department, updateDepartmentType } from "./department.type";
 
-const apiAuthUrl = `${config.apiBaseUrl}/api/auth`;
+const apiBaseUrl = `${config.apiBaseUrl}`;
 
 export async function getTechstack(search?: string) {
   try {
-    const res = await apiClientBrowser.get("http://localhost:8080/tech-stack", {
+    const res = await apiClientBrowser.get(`${apiBaseUrl}tech-stack`, {
       params: {
         search,
       },
@@ -19,7 +20,7 @@ export async function getTechstack(search?: string) {
 
 export async function getProject(search?: string) {
   try {
-    const res = await apiClientBrowser.get("http://localhost:8080/project", {
+    const res = await apiClientBrowser.get(`${apiBaseUrl}project`, {
       params: {
         search,
       },
@@ -32,7 +33,7 @@ export async function getProject(search?: string) {
 
 export async function getEmployee(search?: string) {
   try {
-    const res = await apiClientBrowser.get("http://localhost:8080/employee", {
+    const res = await apiClientBrowser.get(`${apiBaseUrl}employee`, {
       params: {
         search,
       },
@@ -43,11 +44,21 @@ export async function getEmployee(search?: string) {
   }
 }
 
-export async function getDepartment(name?: string) {
+export async function getDepartment({
+  name,
+  search,
+  page,
+}: {
+  name?: string;
+  search?: string;
+  page?: string;
+}) {
   try {
-    const res = await apiClientBrowser.get("http://localhost:8080/department", {
+    const res = await apiClientBrowser.get(`${apiBaseUrl}department`, {
       params: {
         name,
+        search,
+        page,
       },
     });
     return res.data;
@@ -57,30 +68,24 @@ export async function getDepartment(name?: string) {
 }
 
 export async function createDepartment(Customergroup: CreateProjectTypeRespone) {
-  // eslint-disable-next-line no-console
-  console.log(apiAuthUrl);
   try {
-    const res = await apiClientBrowser.post("http://localhost:8080/department", Customergroup);
-    return res.data as CreateProjectTypeRespone;
+    const res = await apiClientBrowser.post(`${apiBaseUrl}department`, Customergroup);
+    return res.data as ProjectTypeRespone;
   } catch (err) {
     console.error(err);
   }
 }
-export async function updateCustomergroup(Customergroup: CreateProjectTypeRespone) {
-  // eslint-disable-next-line no-console
-  console.log(apiAuthUrl);
+export async function updateDepartment(Customergroup: updateDepartmentType) {
   try {
-    const res = await apiClientBrowser.put("http://localhost:8080/customer-group", Customergroup);
-    return res.data as CreateProjectTypeRespone;
+    const res = await apiClientBrowser.put(`${apiBaseUrl}department`, Customergroup);
+    return res.data as Department;
   } catch (err) {
     console.error(err);
   }
 }
 export async function deleteCustomergroup(id: string) {
-  // eslint-disable-next-line no-console
-  console.log(apiAuthUrl);
   try {
-    const res = await apiClientBrowser.delete("http://localhost:8080/customer-group", {
+    const res = await apiClientBrowser.delete(`${apiBaseUrl}customer-group`, {
       data: {
         id,
       },

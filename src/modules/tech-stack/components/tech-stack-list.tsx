@@ -7,7 +7,7 @@ import { FaAngleLeft, FaAngleRight } from "react-icons/fa";
 import { TechstackRow } from "./tech-stack-item";
 import { AppContext } from "src/contexts";
 import { getTechstack } from "../tech-stack.service";
-import useDebounce from "src/hooks/useDebounce";
+import useDebounce from "src/hooks/debounce";
 
 export interface TechstackType {
   _id: string;

@@ -7,7 +7,7 @@ import {
   AiOutlineClose,
 } from "react-icons/ai";
 import { BsTrash } from "react-icons/bs";
-import { Link, useHistory, useLocation } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import { Modal } from "src/components";
 import { useMedia } from "src/hooks/media-query";
 import { deleteCustomergroup } from "../department.service";
@@ -27,7 +27,7 @@ export function CustomerGroupRow({ name, desc, techStack, projects, employee, _i
   }
 
   const history = useHistory();
-  const location = useLocation();
+  // const location = useLocation();
 
   return (
     <>
@@ -86,35 +86,51 @@ export function CustomerGroupRow({ name, desc, techStack, projects, employee, _i
         {isMobile && (
           <>
             <td>
-              {techStack.length < 1 && "tech"}
-              {techStack.length > 0 &&
-                techStack.map((tech) => <Link to={`tech-stack/${tech._id}`}>{tech.name}, </Link>)}
+              {techStack.length < 1 && "Chưa thêm tech stack"}
+              {techStack.length > 0 && (
+                <ul className="list-with-comma">
+                  {techStack.map((tech) => (
+                    <li>
+                      <Link to={`tech-stack/${tech._id}`}>{tech.name}</Link>
+                    </li>
+                  ))}
+                </ul>
+              )}
             </td>
             <td>
               {projects.length < 1 && "Chưa thêm dự án"}
-              {projects.map((project) => (
-                <Link to={`project-stack/${project._id}`}>{project.name} ,</Link>
-              ))}
+              <ul className="list-with-comma">
+                {projects.map((project) => (
+                  <li>
+                    <Link to={`project/${project._id}`}>{project.name}</Link>
+                  </li>
+                ))}
+              </ul>
             </td>
             <td>
               {employee.length < 1 && "Chưa thêm nhân viên"}
-              {employee.length > 0 &&
-                employee.map((employe) => (
-                  <Link to={`employe-stack/${employe._id}`}>{employe.name} ,</Link>
-                ))}
+              {employee.length > 0 && (
+                <ul className="list-with-comma truncate overflow-ellipsis max-w-md">
+                  {employee.map((emp) => (
+                    <li>
+                      <Link to={`employee/${emp._id}`}>{emp.name}</Link>
+                    </li>
+                  ))}
+                </ul>
+              )}
             </td>
             <td>
               <div className="flex ">
                 <span>
-                  <Link to={`project-type/edit/${_id}`}>
+                  <Link to={`department/edit/${_id}`}>
                     <AiFillEdit />
                   </Link>
                 </span>
                 <span onClick={openModal} className="mx-5">
                   <BsTrash />
                 </span>
-                <span onClick={openModal}>
-                  <AiFillEye onClick={() => history.push(`${location.pathname}/${_id}`)} />
+                <span>
+                  <AiFillEye onClick={() => history.push(`department/${_id}`)} />
                 </span>
               </div>
             </td>

@@ -25,12 +25,15 @@ export const routeCustomerGroupDetailBase = `${routeCategoryBase}/customer-group
 export const routeEditCustomerGroupBase = `${routeCategoryBase}/customer-group/edit/:id`;
 export const routeCreateCustomerGroupBase = `${routeCategoryBase}/customer-group/add`;
 
-export const routeDepartmentBase = "/department";
-export const routeCreateDepartmentBase = "/department/add";
-export const routeDepartmentDetailBase = "/department/:id";
+export const routeManageBase = "/manage";
 
-export const routeEmployeeBase = "/employee";
-export const routeCreateEmployee = "/employee/add";
+export const routeDepartmentBase = `${routeManageBase}/department`;
+export const routeCreateDepartmentBase = `${routeManageBase}/department/add`;
+export const routeDepartmentDetailBase = `${routeManageBase}/department/:id`;
+export const routeDepartmentEditBase = `${routeManageBase}/department/edit/:id`;
 
-export const routeProjectBase = "/project";
-export const routeCreateProjectBase = "/project/add";
+export const routeEmployeeBase = `${routeManageBase}/employee`;
+export const routeCreateEmployee = `${routeManageBase}/employee/add`;
+
+export const routeProjectBase = `${routeManageBase}/project`;
+export const routeCreateProjectBase = `${routeManageBase}/project/add`;

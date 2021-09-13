@@ -11,7 +11,7 @@ export function CustomerGroupCard() {
   useEffect(() => {
     async function getProjectType() {
       const projectTypeInfo = await apiClientBrowser.get(
-        `http://localhost:8080/project-type/${id}`,
+        `http://localhost:8080/customer-group/${id}`,
       );
       setProjectTypeData(projectTypeInfo.data as CustomerGroupType);
     }

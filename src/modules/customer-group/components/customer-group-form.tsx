@@ -1,6 +1,8 @@
 import React from "react";
 import { useForm } from "react-hook-form";
 import { useHistory } from "react-router";
+import { toast } from "react-toastify";
+import { routeCustomerGroupBase } from "src/constants/routes";
 import { createCustomergroup, updateCustomergroup } from "../customer-group.service";
 
 export type AddProps = {
@@ -63,14 +65,64 @@ export function CustomerGroupForm({
 
   const history = useHistory();
 
-  function onSubmit(data: AddProps) {
+  async function onSubmit(data: AddProps) {
+    const toastId = toast.loading("Xin đợi...");
+
     if (edit) {
-      updateCustomergroup({
-        ...data,
-        _id: pId,
-      });
+      try {
+        toast.update(toastId, {
+          render: "Đang thêm trạng thái dự án",
+          type: "warning",
+          isLoading: true,
+        });
+        await updateCustomergroup({
+          ...data,
+          _id: pId,
+        });
+        toast.update(toastId, {
+          render: "Thêm mới thành công",
+          type: "success",
+          isLoading: false,
+          autoClose: 500,
+        });
+        setTimeout(() => {
+          history.push(`${routeCustomerGroupBase}`);
+        }, 300);
+        reset();
+      } catch (error) {
+        toast.update(toastId, {
+          render: "Đã xảy ra lỗi không thể thêm nhóm khách hàng",
+          type: "error",
+          isLoading: false,
+          autoClose: 500,
+        });
+      }
     } else {
-      createCustomergroup(data);
+      try {
+        toast.update(toastId, {
+          render: "Đang tạo nhóm khách hàng",
+          type: "warning",
+          isLoading: true,
+        });
+        const projectStatusResponse = await createCustomergroup(data);
+        toast.update(toastId, {
+          render: "Tạo mới thành công",
+          type: "success",
+          isLoading: false,
+          autoClose: 500,
+        });
+        setTimeout(() => {
+          history.push(`${routeCustomerGroupBase}/${projectStatusResponse?._id}`);
+        }, 300);
+        reset();
+      } catch (error) {
+        toast.update(toastId, {
+          render: "Đã xảy ra lỗi không thể thêm nhóm khách hàng",
+          type: "error",
+          isLoading: false,
+          autoClose: 500,
+        });
+      }
       reset();
     }
   }
@@ -90,10 +142,12 @@ export function CustomerGroupForm({
       </div>
       <div className="flex flex-col">
         <label className="font-normal text-dark text-lg mt-3">Mô tả</label>
-        <input
-          className="text-base p-2 py-1 mt-2"
+        <textarea
+          rows={4}
+          cols={50}
+          className="text-base p-2 py-1 mt-2 border border-table-lightGray resize-none"
           {...register("desc", {
-            required: "This is a required",
+            required: "Mô tả không được để trống",
           })}
           placeholder="Mô tả"
         />
@@ -118,24 +172,39 @@ export function CustomerGroupForm({
         )}
       </div>
 
-      <div className="flex flex-col">
-        <label className="font-normal text-dark text-lg mt-2">Trạng thái</label>
-        <select
-          className="text-base p-2 py-1 border-table-lightGray border"
-          {...register("status", {
-            required: "This is a required",
-          })}
-        >
-          <option value={StatusEnum.active}>{StatusEnum.active}</option>
-          <option value={StatusEnum.inactive}>{StatusEnum.inactive}</option>
-        </select>
-        {errors.status && <p className="text-red-500 font-normal mt-2">{errors.status.message}</p>}
+      <div className="font-normal text-dark text-lg mt-3">Trạng thái </div>
+
+      <div className="">
+        <input
+          {...register("status", { required: "Cần chọn trạng thái" })}
+          type="radio"
+          value="Active"
+          id="radio-active"
+          className="mr-2"
+        />
+        <label className="font-normal text-dark text-lg mt-3" htmlFor="radio-active">
+          Active
+        </label>
       </div>
+
+      <div>
+        <input
+          {...register("status", { required: "Cần chọn trạng thái" })}
+          type="radio"
+          className="mr-2"
+          value="Inactive"
+          id="radio-inactive"
+        />
+        <label className="font-normal text-dark text-lg mt-3" htmlFor="radio-inactive">
+          Inactive
+        </label>
+      </div>
+      {errors.status && <p className="text-red-500 font-normal mt-2">{errors.status.message}</p>}
       <div className="flex justify-end px-3 pt-5 py-3 font-light">
         <button
           className="p-2 px-2 text-sm font-normal border-primary border text-primary rounded-md mr-2"
           onClick={() => {
-            history.push("/customer-group");
+            history.push(routeCustomerGroupBase);
           }}
         >
           Hủy

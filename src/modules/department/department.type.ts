@@ -32,3 +32,12 @@ export type Department = {
   projects: Projects[];
   employee: Employee[];
 };
+export type updateDepartmentType = {
+  _id: string;
+  name: string;
+  desc: string;
+  techStack: string[];
+  projects: string[];
+  employee: string[];
+  pId?: string;
+};

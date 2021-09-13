@@ -7,7 +7,7 @@ import { FaAngleLeft, FaAngleRight } from "react-icons/fa";
 import { CustomerGroupRow } from "./customer-group-item";
 import { AppContext } from "src/contexts";
 import { getCustomergroup } from "../customer-group.service";
-import useDebounce from "src/hooks/useDebounce";
+import useDebounce from "src/hooks/debounce";
 
 export interface CustomerGroupType {
   _id: string;

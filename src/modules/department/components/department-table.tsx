@@ -2,12 +2,13 @@ import { FormEvent, useContext, useEffect, useState } from "react";
 import { Link, useHistory, useLocation } from "react-router-dom";
 import { routeCreateDepartmentBase } from "src/constants/routes";
 import { useMedia } from "src/hooks/media-query";
-import { apiClientBrowser } from "src/lib/request";
 import queryString from "query-string";
 import { FaAngleLeft, FaAngleRight } from "react-icons/fa";
 import { CustomerGroupRow } from "./department-row";
 import { Department } from "../department.type";
 import { AppContext } from "src/contexts";
+import { getDepartment } from "../department.service";
+import useDebounce from "src/hooks/debounce";
 
 export function DepartmentTabel() {
   const isMobile = useMedia("(min-width: 768px)");
@@ -17,24 +18,36 @@ export function DepartmentTabel() {
   const [page, setPage] = useState<number>(1);
 
   const [search, setSearch] = useState("");
+  const debouncedValue = useDebounce<string>(search, 500);
 
   const location = useLocation();
   const history = useHistory();
   useEffect(() => {
-    const pageObject: { page?: number; search?: string } = queryString.parse(location.search);
-    // eslint-disable-next-line no-console
-    console.log(pageObject);
+    const pageObject: { page?: string; search?: string } = queryString.parse(location.search);
     async function getProjectTypes() {
       setLoading(true);
-      const projectTypes = await apiClientBrowser.get(
-        `http://localhost:8080/department?${queryString.stringify(pageObject)}`,
-      );
+      const projectTypes = await getDepartment(pageObject);
       setLoading(false);
-      setListProjectType(projectTypes.data as Department[]);
+      setListProjectType(projectTypes as Department[]);
     }
     getProjectTypes();
   }, [location, setLoading]);
+  useEffect(() => {
+    async function getProjectTypes() {
+      const projectTypes = await getDepartment({ search });
+      setListProjectType(projectTypes as Department[]);
+    }
+    getProjectTypes();
+    const pageObject: { page?: number; search?: string } = queryString.parse(location.search);
+    const a = {
+      ...pageObject,
+      search: search.trim(),
+      page: 1,
+    };
 
+    history.push(`?${queryString.stringify(a)}`);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedValue]);
   function nextHandler() {
     setPage((p) => (p as number) + Number(1));
     history.push(`?page=${Number(page) + 1}`);
@@ -46,13 +59,7 @@ export function DepartmentTabel() {
   }
 
   function userInputHandler(ev: FormEvent<HTMLInputElement>) {
-    const pageObject: { page?: number; search?: string } = queryString.parse(location.search);
     setSearch(ev.currentTarget.value.trim());
-    const a = {
-      ...pageObject,
-      search: ev.currentTarget.value.trim(),
-    };
-    history.push(`?${queryString.stringify(a)}`);
   }
 
   return (
@@ -77,7 +84,7 @@ export function DepartmentTabel() {
               <>
                 <td className="w-3/6 md:w-auto  pb-1">Tech stack</td>
                 <td className="w-3/6 md:w-auto  pb-1">Dự án</td>
-                <td className="w-3/6 md:w-2/12  pb-1">Nhân viên</td>
+                <td className="w-3/6 md:w-3/12  pb-1">Nhân viên</td>
                 <td className="w-3/6 md:w-1/12  pb-1">Hành động</td>
               </>
             )}

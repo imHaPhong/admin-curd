@@ -6,7 +6,7 @@ import queryString from "query-string";
 import { FaAngleLeft, FaAngleRight } from "react-icons/fa";
 import { ProjectStatusRow } from "./project-status-item";
 import { AppContext } from "src/contexts";
-import useDebounce from "src/hooks/useDebounce";
+import useDebounce from "src/hooks/debounce";
 import { getProjectStatus } from "../project-status.service";
 
 export interface ProjectStatus {

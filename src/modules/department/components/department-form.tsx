@@ -2,12 +2,15 @@ import React, { FocusEvent, useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useHistory } from "react-router";
 import { toast } from "react-toastify";
+import { routeDepartmentBase } from "src/constants/routes";
+import { ProjectType } from "src/modules/project/department.type";
+import { TechstackType } from "src/modules/tech-stack";
 import {
   createDepartment,
   getEmployee,
   getProject,
   getTechstack,
-  updateCustomergroup,
+  updateDepartment,
 } from "../department.service";
 import { Employee, Projects, Techstack } from "../department.type";
 import { DepartmentTag } from "./department-tag";
@@ -26,11 +29,13 @@ interface IFormInput {
   project: String[];
 }
 
-type TechStackFormProps = {
+type DepartmentFormProps = {
   pId?: string;
   name?: string;
   desc?: string;
-  project?: string[];
+  project?: ProjectType[];
+  employee?: Employee[];
+  techstack?: TechstackType[];
   edit: boolean;
 };
 
@@ -40,7 +45,15 @@ type DepartmentFormStateType = {
   listEmployee: Employee[];
 };
 
-export function DepartmentForm({ name, desc, edit = false, pId }: TechStackFormProps) {
+export function DepartmentForm({
+  name,
+  desc,
+  edit = false,
+  pId,
+  techstack,
+  employee,
+  project,
+}: DepartmentFormProps) {
   const {
     register,
     reset,
@@ -53,21 +66,84 @@ export function DepartmentForm({ name, desc, edit = false, pId }: TechStackFormP
     },
   });
 
-  const [techstackSelected, setTechstackSelected] =
-    useState<{ idSelectd: string[]; seletedList: { _id: string; name: string }[] }>();
-  const [projectSelected, setProjectSelected] =
-    useState<{ idSelectd: string[]; seletedList: { _id: string; name: string }[] }>();
-  const [employeeSelected, setEmployeeSelected] =
-    useState<{ idSelectd: string[]; seletedList: { _id: string; name: string }[] }>();
+  const [techstackSelected, setTechstackSelected] = useState<{
+    idSelectd: string[];
+    seletedList: { _id: string; name: string }[];
+  }>({
+    idSelectd: techstack?.map((el) => el._id) || [],
+    seletedList:
+      [
+        ...(techstack?.map((el) => ({
+          _id: el._id,
+          name: el.name,
+        })) || []),
+      ] || [],
+  });
+
+  const [projectSelected, setProjectSelected] = useState<{
+    idSelectd: string[];
+    seletedList: { _id: string; name: string }[];
+  }>({
+    idSelectd: project?.map((el) => el._id) || [],
+    seletedList:
+      [
+        ...(project?.map((el) => ({
+          _id: el._id,
+          name: el.name,
+        })) || []),
+      ] || [],
+  });
+  const [employeeSelected, setEmployeeSelected] = useState<{
+    idSelectd: string[];
+    seletedList: { _id: string; name: string }[];
+  }>({
+    idSelectd: employee?.map((el) => el._id) || [],
+    seletedList:
+      [
+        ...(employee?.map((el) => ({
+          _id: el._id,
+          name: el.name,
+        })) || []),
+      ] || [],
+  });
 
   const history = useHistory();
 
-  function onSubmit(data: AddProps) {
+  async function onSubmit(data: AddProps) {
+    const toastId = toast.loading("Xin đợi...");
+
     if (edit) {
-      updateCustomergroup({
-        ...data,
-        pId,
-      });
+      try {
+        toast.update(toastId, {
+          render: "Đang tạo trạng thái dự án",
+          type: "warning",
+          isLoading: true,
+        });
+        await updateDepartment({
+          ...data,
+          projects: projectSelected?.idSelectd,
+          techStack: techstackSelected?.idSelectd,
+          employee: employeeSelected?.idSelectd,
+          _id: pId || "",
+        });
+        toast.update(toastId, {
+          render: "Tạo mới thành công",
+          type: "success",
+          isLoading: false,
+          autoClose: 500,
+        });
+        setTimeout(() => {
+          history.push(`${routeDepartmentBase}`);
+        }, 300);
+        reset();
+      } catch (error) {
+        toast.update(toastId, {
+          render: "Đã xảy ra lỗi không thể thêm trạng thái dự án",
+          type: "error",
+          isLoading: false,
+          autoClose: 500,
+        });
+      }
     } else {
       const departmentData = {
         ...data,
@@ -75,24 +151,31 @@ export function DepartmentForm({ name, desc, edit = false, pId }: TechStackFormP
         techStack: techstackSelected?.idSelectd,
         employee: employeeSelected?.idSelectd,
       };
-      toast.promise(createDepartment(departmentData), {
-        pending: "Đang thêm nhân viên",
-        success: "Đã thêm nhân viên thành công",
-        error: "Đã xảy ra lỗi không thể thêm nhân viên",
-      });
-      reset();
-      setEmployeeSelected({
-        idSelectd: [],
-        seletedList: [],
-      });
-      setProjectSelected({
-        idSelectd: [],
-        seletedList: [],
-      });
-      setTechstackSelected({
-        idSelectd: [],
-        seletedList: [],
-      });
+      try {
+        toast.update(toastId, {
+          render: "Đang tạo trạng thái dự án",
+          type: "warning",
+          isLoading: true,
+        });
+        const projectStatusResponse = await createDepartment(departmentData);
+        toast.update(toastId, {
+          render: "Tạo mới thành công",
+          type: "success",
+          isLoading: false,
+          autoClose: 500,
+        });
+        setTimeout(() => {
+          history.push(`${routeDepartmentBase}/${projectStatusResponse?._id}`);
+        }, 300);
+        reset();
+      } catch (error) {
+        toast.update(toastId, {
+          render: "Đã xảy ra lỗi không thể thêm trạng thái dự án",
+          type: "error",
+          isLoading: false,
+          autoClose: 500,
+        });
+      }
     }
   }
 
@@ -199,10 +282,12 @@ export function DepartmentForm({ name, desc, edit = false, pId }: TechStackFormP
       </div>
       <div className="flex flex-col">
         <label className="font-normal text-dark text-lg mt-3">Mô tả</label>
-        <input
-          className="text-base p-2 py-1 mt-2"
+        <textarea
+          rows={4}
+          cols={50}
+          className="text-base p-2 py-1 mt-2 border border-table-lightGray resize-none"
           {...register("desc", {
-            required: "This is a required",
+            required: "Mô tả không được để trống",
           })}
           placeholder="Mô tả"
         />

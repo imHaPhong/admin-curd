@@ -7,7 +7,7 @@ import queryString from "query-string";
 import { FaAngleLeft, FaAngleRight } from "react-icons/fa";
 import { AppContext } from "src/contexts";
 import { getProjectType } from "../project-type.service";
-import useDebounce from "src/hooks/useDebounce";
+import useDebounce from "src/hooks/debounce";
 
 export interface ProjectType {
   _id: string;

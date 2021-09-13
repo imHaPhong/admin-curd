@@ -10,8 +10,11 @@ import {
   routeCreateProjectTypeBase,
   routeCreateTechStackBase,
   routeCustomerGroupBase,
+  routeCustomerGroupDetailBase,
   routeDepartmentBase,
   routeDepartmentDetailBase,
+  routeDepartmentEditBase,
+  routeEditCustomerGroupBase,
   routeEditProjectStatusBase,
   routeEditProjectTypeBase,
   routeEditTechStackBase,
@@ -111,6 +114,20 @@ export const routesConfig = [
     ),
   },
   {
+    path: routeEditCustomerGroupBase,
+    exact: true,
+    component: loadable(
+      lazy(() => import("./pages/categories/customer-group/edit-customer-group")),
+    ),
+  },
+  {
+    path: routeCustomerGroupDetailBase,
+    exact: true,
+    component: loadable(
+      lazy(() => import("./pages/categories/customer-group/detail-customer-group")),
+    ),
+  },
+  {
     path: routeDepartmentBase,
     exact: true,
     component: loadable(lazy(() => import("./pages/mange/department"))),
@@ -124,6 +141,11 @@ export const routesConfig = [
     path: routeDepartmentDetailBase,
     exact: true,
     component: loadable(lazy(() => import("./pages/mange/department/detail-department"))),
+  },
+  {
+    path: routeDepartmentEditBase,
+    exact: true,
+    component: loadable(lazy(() => import("./pages/mange/department/edit-department"))),
   },
   {
     path: routeEmployeeBase,

@@ -11,9 +11,9 @@ import { Link, useHistory, useLocation } from "react-router-dom";
 import { Modal } from "src/components";
 import { useMedia } from "src/hooks/media-query";
 import { Employee } from "src/modules/department/department.type";
-import { deleteCustomergroup } from "../department.service";
+import { deleteCustomergroup } from "../employee.service";
 
-export function EmployeeRow({ name, techStack, projects, _id, DoB }: Employee) {
+export function EmployeeRow({ name, techStack, projects, _id, DoB, phonemumber }: Employee) {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [isShow, setIsShow] = useState(false);
   const isMobile = useMedia("(min-width: 768px)");
@@ -84,34 +84,46 @@ export function EmployeeRow({ name, techStack, projects, _id, DoB }: Employee) {
         </td>
         {isMobile && (
           <>
-            <td>{DoB}</td>
+            <td>{new Date(DoB).toLocaleString()}</td>
+            <td>{phonemumber}</td>
+
             <td>
               {techStack.length === 0 && "Chưa thêm tech stack"}
-              {techStack.length > 0 &&
-                techStack.map((tech) => (
-                  <Link to={`tech-stack/${tech._id}`}>{tech.name || "đá"}, </Link>
-                ))}
+              {techStack.length > 0 && (
+                <ul className="list-with-comma">
+                  {techStack.map((tech) => (
+                    <li>
+                      <Link to={`tech-stack/${tech._id}`}>{tech.name}</Link>
+                    </li>
+                  ))}
+                </ul>
+              )}
             </td>
             <td>
               {projects.length === 0 && "Chưa tham gia vào dự án"}
 
-              {projects.length > 0 &&
-                projects.map((project) => (
-                  <Link to={`project-stack/${project._id}`}>{project.name || "đas"} ,</Link>
-                ))}
+              {projects.length > 0 && (
+                <ul className="list-with-comma">
+                  {projects.map((project) => (
+                    <li>
+                      <Link to={`project/${project._id}`}>{project.name}</Link>
+                    </li>
+                  ))}
+                </ul>
+              )}
             </td>
 
             <td>
               <div className="flex ">
                 <span>
-                  <Link to={`project-type/edit/${_id}`}>
+                  <Link to={`employee/edit/${_id}`}>
                     <AiFillEdit />
                   </Link>
                 </span>
                 <span onClick={openModal} className="mx-5">
                   <BsTrash />
                 </span>
-                <span onClick={openModal}>
+                <span>
                   <AiFillEye onClick={() => history.push(`${location.pathname}/${_id}`)} />
                 </span>
               </div>

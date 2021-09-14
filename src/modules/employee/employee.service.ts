@@ -1,9 +1,18 @@
 import { config } from "src/constants/config";
 import { apiClientBrowser } from "src/lib/request";
 import { CreateProjectTypeRespone } from "../project-type/project-type.type";
-import { EmployeeRequest } from "./department.type";
+import { EmployeeRequest } from "./employee.type";
 
-const apiAuthUrl = `${config.apiBaseUrl}/api/auth`;
+const apiEmployeeUrl = `${config.apiBaseUrl}employee`;
+
+export async function updateEmployee(Employee: EmployeeRequest) {
+  try {
+    const res = await apiClientBrowser.put(`${apiEmployeeUrl}`, Employee);
+    return res.data as EmployeeRequest;
+  } catch (err) {
+    console.error(err);
+  }
+}
 
 export async function getTechstack(search?: string) {
   try {
@@ -31,11 +40,21 @@ export async function getProject(search?: string) {
   }
 }
 
-export async function getEmployee(search?: string) {
+export async function getEmployee({
+  name,
+  search,
+  page,
+}: {
+  name?: string;
+  search?: string;
+  page?: string;
+}) {
   try {
-    const res = await apiClientBrowser.get("http://localhost:8080/employee", {
+    const res = await apiClientBrowser.get(apiEmployeeUrl, {
       params: {
+        name,
         search,
+        page,
       },
     });
     return res.data;
@@ -66,8 +85,6 @@ export async function createEmployee(Employee: EmployeeRequest) {
   }
 }
 export async function updateCustomergroup(Customergroup: CreateProjectTypeRespone) {
-  // eslint-disable-next-line no-console
-  console.log(apiAuthUrl);
   try {
     const res = await apiClientBrowser.put("http://localhost:8080/customer-group", Customergroup);
     return res.data as CreateProjectTypeRespone;
@@ -76,8 +93,6 @@ export async function updateCustomergroup(Customergroup: CreateProjectTypeRespon
   }
 }
 export async function deleteCustomergroup(id: string) {
-  // eslint-disable-next-line no-console
-  console.log(apiAuthUrl);
   try {
     const res = await apiClientBrowser.delete("http://localhost:8080/customer-group", {
       data: {

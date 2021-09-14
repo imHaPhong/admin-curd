@@ -5,7 +5,7 @@ import { config } from "src/constants/config";
 import { apiClientBrowser } from "src/lib/request";
 import { DepartmentForm } from "src/modules/department";
 import { Employee } from "src/modules/department/department.type";
-import { ProjectType } from "src/modules/project/department.type";
+import { ProjectType } from "src/modules/project/project.type";
 import { TechstackType } from "src/modules/tech-stack";
 
 interface DepartmentType {

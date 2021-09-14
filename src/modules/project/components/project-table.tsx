@@ -6,32 +6,52 @@ import { apiClientBrowser } from "src/lib/request";
 import queryString from "query-string";
 import { FaAngleLeft, FaAngleRight } from "react-icons/fa";
 import { ProjectRow } from "./project-row";
-import { Projects } from "../department.type";
+import { Projects } from "../project.type";
 import { AppContext } from "src/contexts";
+import useDebounce from "src/hooks/debounce";
+import { getProject } from "../project.service";
 
 export function ProjectTable() {
   const isMobile = useMedia("(min-width: 768px)");
   const { setLoading, loading } = useContext(AppContext);
 
-  const [listProjectType, setListProjectType] = useState<Projects[]>([]);
+  const [listProject, setListProject] = useState<Projects[]>([]);
   const [page, setPage] = useState<number>(1);
 
   const [search, setSearch] = useState("");
+  const debouncedValue = useDebounce<string>(search, 500);
 
   const location = useLocation();
   const history = useHistory();
   useEffect(() => {
     const pageObject: { page?: number; search?: string } = queryString.parse(location.search);
-    async function getProjectTypes() {
+    async function getProject() {
       setLoading(true);
       const projectTypes = await apiClientBrowser.get(
         `http://localhost:8080/project?${queryString.stringify(pageObject)}`,
       );
       setLoading(false);
-      setListProjectType(projectTypes.data as Projects[]);
+      setListProject(projectTypes.data as Projects[]);
     }
-    getProjectTypes();
+    getProject();
   }, [location, setLoading]);
+
+  useEffect(() => {
+    async function getProjectData() {
+      const projectTypes = await getProject({ search });
+      setListProject(projectTypes as Projects[]);
+    }
+    getProjectData();
+    const pageObject: { page?: number; search?: string } = queryString.parse(location.search);
+    const a = {
+      ...pageObject,
+      search: search.trim(),
+      page: 1,
+    };
+
+    history.push(`?${queryString.stringify(a)}`);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedValue]);
 
   function nextHandler() {
     setPage((p) => (p as number) + Number(1));
@@ -44,16 +64,7 @@ export function ProjectTable() {
   }
 
   function userInputHandler(ev: FormEvent<HTMLInputElement>) {
-    const pageObject: { page?: number; search?: string } = queryString.parse(location.search);
     setSearch(ev.currentTarget.value.trim());
-    const a = {
-      ...pageObject,
-      search: ev.currentTarget.value.trim(),
-    };
-    // if (ev.currentTarget.value.trim() === "") {
-    //   a.search = null;
-    // }
-    history.push(`?${queryString.stringify(a)}`);
   }
 
   return (
@@ -88,8 +99,8 @@ export function ProjectTable() {
         </thead>
 
         <tbody>
-          {listProjectType.length > 0 &&
-            listProjectType.map(
+          {listProject.length > 0 &&
+            listProject.map(
               ({ _id, name, techStack, department, projectStatus, projectType, member }, index) => (
                 <ProjectRow
                   member={member}
@@ -103,7 +114,7 @@ export function ProjectTable() {
                 />
               ),
             )}
-          {!loading && listProjectType.length === 0 && (
+          {!loading && listProject.length === 0 && (
             <tr>
               <td colSpan={5} className="text-center bg-table text-base">
                 Không tìm thấy dự án phù hợp

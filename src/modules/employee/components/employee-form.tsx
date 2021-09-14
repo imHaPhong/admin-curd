@@ -10,9 +10,11 @@ import {
   getProject,
   getTechstack,
   updateCustomergroup,
-} from "../department.service";
-import { Employee, EmployeeRequest, Projects, Techstack } from "../department.type";
+  updateEmployee,
+} from "../employee.service";
+import { Employee, EmployeeRequest, Projects, Techstack } from "../employee.type";
 import { useHistory } from "react-router";
+import { routeEmployeeBase } from "src/constants/routes";
 
 export type AddProps = {
   name: string;
@@ -22,16 +24,28 @@ export type AddProps = {
   path: string;
 };
 
-type TechStackFormProps = {
+type EmployeeFormProps = {
   pId?: string;
   name?: string;
-  desc?: string;
+  phonenumber?: string;
   project?: string[];
+  DoB?: string;
+  workExperienceList?: {
+    techstackId: string;
+    experience: string;
+  }[];
   edit: boolean;
 };
 
-export function EmployeeForm({ name, desc, edit = false, pId }: TechStackFormProps) {
-  const [startDate, setStartDate] = useState<Date>(new Date());
+export function EmployeeForm({
+  name,
+  phonenumber,
+  workExperienceList,
+  edit = false,
+  DoB = new Date().toString(),
+  pId,
+}: EmployeeFormProps) {
+  const [startDate, setStartDate] = useState<Date>(new Date(DoB));
   const [listTechstack, setListechstack] = useState<Techstack[]>([]);
 
   const history = useHistory();
@@ -44,6 +58,9 @@ export function EmployeeForm({ name, desc, edit = false, pId }: TechStackFormPro
     getTechstackData();
   }, []);
 
+  // eslint-disable-next-line no-console
+  console.log(workExperienceList);
+
   const {
     control,
     handleSubmit,
@@ -52,9 +69,14 @@ export function EmployeeForm({ name, desc, edit = false, pId }: TechStackFormPro
     formState: { errors },
   } = useForm({
     defaultValues: {
-      name: "",
-      phonemumber: "",
-      workExperience: [{ techstackId: "", experience: "" }],
+      name,
+      phonenumber,
+      workExperience: [
+        ...(workExperienceList?.map((el) => ({
+          techstackId: el.techstackId,
+          experience: el.experience,
+        })) || []),
+      ],
     },
   });
   const { fields, append, remove } = useFieldArray({
@@ -62,21 +84,65 @@ export function EmployeeForm({ name, desc, edit = false, pId }: TechStackFormPro
     name: "workExperience",
   });
 
-  function onSubmit(data: React.FormEventHandler<HTMLFormElement>) {
-    toast.promise(
-      createEmployee({
-        ...data,
-        DoB: startDate,
-      } as EmployeeRequest),
-      {
-        pending: "Đang thêm nhân viên",
-        success: "Đã thêm nhân viên thành công",
-        error: "Đã xảy ra lỗi không thể thêm nhân viên",
-      },
-    );
+  async function onSubmit(data: React.FormEventHandler<HTMLFormElement>) {
+    const toastId = toast.loading("Xin đợi...");
+    if (edit) {
+      try {
+        toast.update(toastId, {
+          render: "Đang tạo trạng thái dự án",
+          type: "warning",
+          isLoading: true,
+        });
+        updateEmployee({ ...data, DoB: startDate, _id: pId } as EmployeeRequest);
+        toast.update(toastId, {
+          render: "Tạo mới thành công",
+          type: "success",
+          isLoading: false,
+          autoClose: 500,
+        });
+        setTimeout(() => {
+          history.push(`${routeEmployeeBase}`);
+        }, 300);
+        reset();
+      } catch (error) {
+        toast.update(toastId, {
+          render: "Đã xảy ra lỗi không thể thêm trạng thái dự án",
+          type: "error",
+          isLoading: false,
+          autoClose: 500,
+        });
+      }
+    } else {
+      try {
+        toast.update(toastId, {
+          render: "Đang tạo trạng thái dự án",
+          type: "warning",
+          isLoading: true,
+        });
+        const employeeResponse = await createEmployee({
+          ...data,
+          DoB: startDate,
+        } as EmployeeRequest);
+        toast.update(toastId, {
+          render: "Tạo mới thành công",
+          type: "success",
+          isLoading: false,
+          autoClose: 500,
+        });
+        setTimeout(() => {
+          history.push(`${routeEmployeeBase}/${employeeResponse?._id}`);
+        }, 300);
+        reset();
+      } catch (error) {
+        toast.update(toastId, {
+          render: "Đã xảy ra lỗi không thể thêm trạng thái dự án",
+          type: "error",
+          isLoading: false,
+          autoClose: 500,
+        });
+      }
+    }
   }
-
-  const options = ["test", "Bill"];
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="p-3">
@@ -104,7 +170,7 @@ export function EmployeeForm({ name, desc, edit = false, pId }: TechStackFormPro
         <input
           type="number"
           className="text-base p-2 py-1 mt-1"
-          {...register("phonemumber", {
+          {...register("phonenumber", {
             minLength: {
               value: 10,
               message: "Số điện thoại yêu cầu 10 số",
@@ -124,9 +190,9 @@ export function EmployeeForm({ name, desc, edit = false, pId }: TechStackFormPro
           })}
           placeholder="Số điện thoại"
         />
-        {errors.phonemumber && (
+        {errors.phonenumber && (
           <>
-            <p className="text-red-500 font-normal mt-2">{errors.phonemumber.message}</p>
+            <p className="text-red-500 font-normal mt-2">{errors.phonenumber.message}</p>
           </>
         )}
       </div>

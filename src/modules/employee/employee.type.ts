@@ -25,6 +25,7 @@ export type Employee = {
 };
 
 export type EmployeeRequest = {
+  _id?: string;
   name: string;
   DoB: Date;
   phonemumber: string;
@@ -33,6 +34,19 @@ export type EmployeeRequest = {
     experience: string;
   }[];
   projects: Projects[];
+  techstack?: Techstack[];
+};
+export type EmployeeDetail = {
+  _id?: string;
+  name: string;
+  DoB: Date;
+  phonenumber: string;
+  workExperience: {
+    techstackId: string;
+    experience: string;
+  }[];
+  projects: Projects[];
+  techStack?: Techstack[];
 };
 
 export type Department = {
@@ -42,4 +56,13 @@ export type Department = {
   techStack: Techstack[];
   projects: Projects[];
   employee: Employee[];
+};
+
+export type updateEmployeeType = {
+  _id: string;
+  name: string;
+  desc: string;
+  techStack: string[];
+  projects: string[];
+  pId?: string;
 };

@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { useHistory } from "react-router";
 import { toast } from "react-toastify";
 import { routeDepartmentBase } from "src/constants/routes";
-import { ProjectType } from "src/modules/project/department.type";
+import { ProjectType } from "src/modules/project/project.type";
 import { TechstackType } from "src/modules/tech-stack";
 import {
   createDepartment,

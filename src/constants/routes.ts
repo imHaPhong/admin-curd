@@ -34,6 +34,10 @@ export const routeDepartmentEditBase = `${routeManageBase}/department/edit/:id`;
 
 export const routeEmployeeBase = `${routeManageBase}/employee`;
 export const routeCreateEmployee = `${routeManageBase}/employee/add`;
+export const routeEditEmployee = `${routeManageBase}/employee/edit/:id`;
+export const routeEmployeeDetail = `${routeManageBase}/employee/:id`;
 
 export const routeProjectBase = `${routeManageBase}/project`;
 export const routeCreateProjectBase = `${routeManageBase}/project/add`;
+export const routeEditProject = `${routeManageBase}/project/edit/:id`;
+export const routeProjectDetail = `${routeManageBase}/project/:id`;

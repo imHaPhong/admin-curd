@@ -5,18 +5,21 @@ import { useMedia } from "src/hooks/media-query";
 import { apiClientBrowser } from "src/lib/request";
 import queryString from "query-string";
 import { FaAngleLeft, FaAngleRight } from "react-icons/fa";
-import { Employee } from "../department.type";
+import { Employee } from "../employee.type";
 import { EmployeeRow } from "./employee-row";
 import { AppContext } from "src/contexts";
+import useDebounce from "src/hooks/debounce";
+import { getEmployee } from "../employee.service";
 
 export function EmployeeTabel() {
   const isMobile = useMedia("(min-width: 768px)");
   const { setLoading, loading } = useContext(AppContext);
 
-  const [listProjectType, setListProjectType] = useState<Employee[]>([]);
+  const [listEmployee, setListEmployee] = useState<Employee[]>([]);
   const [page, setPage] = useState<number>(1);
 
   const [search, setSearch] = useState("");
+  const debouncedValue = useDebounce<string>(search, 500);
 
   const location = useLocation();
   const history = useHistory();
@@ -27,7 +30,7 @@ export function EmployeeTabel() {
       const projectTypes = await apiClientBrowser.get(
         `http://localhost:8080/employee?${queryString.stringify(pageObject)}`,
       );
-      setListProjectType(projectTypes.data as Employee[]);
+      setListEmployee(projectTypes.data as Employee[]);
       setLoading(false);
     }
     getProjectTypes();
@@ -42,18 +45,25 @@ export function EmployeeTabel() {
     setPage((p) => (p as number) - Number(1));
     history.push(`?page=${Number(page) - 1}`);
   }
-
-  function userInputHandler(ev: FormEvent<HTMLInputElement>) {
+  useEffect(() => {
+    async function getEmployeeData() {
+      const projectTypes = await getEmployee({ search });
+      setListEmployee(projectTypes as Employee[]);
+    }
+    getEmployeeData();
     const pageObject: { page?: number; search?: string } = queryString.parse(location.search);
-    setSearch(ev.currentTarget.value.trim());
     const a = {
       ...pageObject,
-      search: ev.currentTarget.value.trim(),
+      search: search.trim(),
+      page: 1,
     };
-    // if (ev.currentTarget.value.trim() === "") {
-    //   a.search = null;
-    // }
+
     history.push(`?${queryString.stringify(a)}`);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedValue]);
+
+  function userInputHandler(ev: FormEvent<HTMLInputElement>) {
+    setSearch(ev.currentTarget.value.trim());
   }
 
   return (
@@ -72,12 +82,13 @@ export function EmployeeTabel() {
       <table className="text-sm border-t-0 w-full md:text-lg mt-2">
         <thead className="text text-table-text font-normal">
           <tr className="">
-            <td className="px-1 md:w-2/12 pb-1">Tên</td>
-            <td className="w-3/6 md:w-2/12 pb-1">Ngày sinh</td>
+            <td className="px-1 md:w-auto pb-1">Tên</td>
+            <td className="w-3/6 md:w-auto pb-1">Ngày sinh</td>
+            <td className="w-3/6 md:w-auto pb-1">Số điện thoại</td>
             {isMobile && (
               <>
-                <td className="w-3/6 md:w-auto  pb-1">Tech stack</td>
-                <td className="w-3/6 md:w-auto  pb-1">Dự án đã tham gia</td>
+                <td className="w-3/6 md:w-3/12  pb-1">Tech stack</td>
+                <td className="w-3/6 md:w-3/12  pb-1">Dự án đã tham gia</td>
                 <td className="w-3/6 md:w-1/12  pb-1">Hành động</td>
               </>
             )}
@@ -85,19 +96,19 @@ export function EmployeeTabel() {
         </thead>
 
         <tbody>
-          {listProjectType.length > 0 &&
-            listProjectType.map(({ _id, name, techStack, projects }, index) => (
+          {listEmployee.length > 0 &&
+            listEmployee.map(({ _id, name, techStack, projects, DoB, phonemumber }, index) => (
               <EmployeeRow
                 _id={_id}
                 key={index}
                 name={name}
-                phonemumber={"dasd"}
-                DoB={"das"}
+                phonemumber={phonemumber}
+                DoB={DoB}
                 techStack={techStack}
                 projects={projects}
               />
             ))}
-          {!loading && listProjectType.length === 0 && (
+          {!loading && listEmployee.length === 0 && (
             <tr>
               <td colSpan={5} className="text-center bg-table text-base">
                 Không tìm thấy dự án phù hợp

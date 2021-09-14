@@ -46,4 +46,5 @@ export type ProjectsResponse = {
   techStack?: string[];
   department?: string;
   member?: string[];
+  _id?: string;
 };

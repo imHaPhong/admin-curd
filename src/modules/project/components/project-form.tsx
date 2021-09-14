@@ -1,6 +1,8 @@
 import React, { FocusEvent, useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useHistory } from "react-router";
+import { toast } from "react-toastify";
+import { routeProjectBase } from "src/constants/routes";
 import {
   createProject,
   // createProject,
@@ -9,9 +11,17 @@ import {
   getProjectStatus,
   getProjectType,
   getTechstack,
-} from "../department.service";
-import { Employee, ProjectStatus, ProjectType, Projects, Techstack } from "../department.type";
-import { DepartmentTag } from "./department-tag";
+  updateProject,
+} from "../project.service";
+import {
+  Department,
+  Employee,
+  ProjectStatus,
+  ProjectType,
+  Projects,
+  Techstack,
+} from "../project.type";
+import { DepartmentTag } from "./project-tag";
 
 export type AddProps = {
   name: string;
@@ -29,11 +39,14 @@ interface IFormInput {
   department: String;
 }
 
-type TechStackFormProps = {
+type ProjectFormProps = {
   pId?: string;
   name?: string;
-  projectType?: string;
-  projectStatus?: string;
+  projectType?: ProjectType;
+  projectStatus?: ProjectType;
+  techStack?: Techstack[];
+  department?: Department;
+  member?: Employee[];
   edit: boolean;
 };
 
@@ -49,9 +62,13 @@ export function ProjectForm({
   name,
   projectStatus,
   projectType,
+  department,
+  techStack,
+  member,
   edit = false,
+  pId,
 }: // pId,
-TechStackFormProps) {
+ProjectFormProps) {
   const {
     register,
     reset,
@@ -60,40 +77,112 @@ TechStackFormProps) {
   } = useForm<IFormInput>({
     defaultValues: {
       name,
-      projectStatus,
-      projectType,
+      projectStatus: projectStatus?._id,
+      projectType: projectType?._id,
+      department: department?._id,
     },
   });
 
   const [techstackInput, setTechstackInput] = useState("");
   const [employeeInput, setEmployeeInput] = useState("");
 
-  const [techstackSelected, setTechstackSelected] =
-    useState<{ idSelectd: string[]; seletedList: { _id: string; name: string }[] }>();
+  const [techstackSelected, setTechstackSelected] = useState<{
+    idSelectd: string[];
+    seletedList: { _id: string; name: string }[];
+  }>({
+    idSelectd: techStack?.map((el) => el._id) || [],
+    seletedList:
+      [
+        ...(techStack?.map((el) => ({
+          _id: el._id,
+          name: el.name,
+        })) || []),
+      ] || [],
+  });
 
-  const [employeeSelected, setEmployeeSelected] =
-    useState<{ idSelectd: string[]; seletedList: { _id: string; name: string }[] }>();
+  const [employeeSelected, setEmployeeSelected] = useState<{
+    idSelectd: string[];
+    seletedList: { _id: string; name: string }[];
+  }>({
+    idSelectd: member?.map((el) => el._id) || [],
+    seletedList:
+      [
+        ...(member?.map((el) => ({
+          _id: el._id,
+          name: el.name,
+        })) || []),
+      ] || [],
+  });
 
   const history = useHistory();
   const selectRef = useRef<HTMLSelectElement>(null);
 
-  function onSubmit(data: AddProps) {
+  async function onSubmit(data: AddProps) {
+    const toastId = toast.loading("Xin đợi...");
+
     if (edit) {
-      // updateCustomergroup({
-      //   ...data,
-      //   pId,
-      // });
+      try {
+        toast.update(toastId, {
+          render: "Đang cập nhật",
+          type: "warning",
+          isLoading: true,
+        });
+        await updateProject({
+          ...data,
+          techStack: techstackSelected?.idSelectd,
+          member: employeeSelected?.idSelectd,
+          _id: pId,
+        });
+        toast.update(toastId, {
+          render: "Cập nhật thành công",
+          type: "success",
+          isLoading: false,
+          autoClose: 500,
+        });
+        setTimeout(() => {
+          history.push(`${routeProjectBase}`);
+        }, 300);
+        reset();
+      } catch (error) {
+        toast.update(toastId, {
+          render: "Đã xảy ra lỗi không thể thêm trạng thái dự án",
+          type: "error",
+          isLoading: false,
+          autoClose: 500,
+        });
+      }
     } else {
-      // eslint-disable-next-line no-console
-      const departmentData = {
-        ...data,
-        techStack: techstackSelected?.idSelectd,
-        member: employeeSelected?.idSelectd,
-      };
+      try {
+        const departmentData = {
+          ...data,
+          techStack: techstackSelected?.idSelectd,
+          member: employeeSelected?.idSelectd,
+        };
 
-      createProject(departmentData);
-
-      reset();
+        toast.update(toastId, {
+          render: "Đang tạo dự án",
+          type: "warning",
+          isLoading: true,
+        });
+        const projectResponse = await createProject(departmentData);
+        toast.update(toastId, {
+          render: "Tạo mới thành công",
+          type: "success",
+          isLoading: false,
+          autoClose: 500,
+        });
+        setTimeout(() => {
+          history.push(`${routeProjectBase}/${projectResponse?._id}`);
+        }, 300);
+        reset();
+      } catch (error) {
+        toast.update(toastId, {
+          render: "Đã xảy ra lỗi không thể thêm trạng thái dự án",
+          type: "error",
+          isLoading: false,
+          autoClose: 500,
+        });
+      }
     }
   }
 
@@ -188,6 +277,7 @@ TechStackFormProps) {
         <label className="font-normal text-dark text-lg mt-3 ">Loại dự án</label>
         <select
           className="text-base p-2 py-1 border-table-lightGray border"
+          value={projectType?._id}
           {...register("projectType", {
             required: "This is a required",
           })}
@@ -204,6 +294,7 @@ TechStackFormProps) {
         <label className="font-normal text-dark text-lg mt-3">Trung tâm phụ trách</label>
         <select
           className="text-base p-2 py-1 border-table-lightGray border"
+          value={department?._id}
           {...register("department", {
             required: "This is a required",
           })}
@@ -220,6 +311,7 @@ TechStackFormProps) {
         <label className="font-normal text-dark text-lg mt-3">Trạng thái dự án</label>
         <select
           className="text-base p-2 py-1 border-table-lightGray border"
+          value={projectStatus?._id}
           {...register("projectStatus", {
             required: "This is a required",
           })}
@@ -232,54 +324,6 @@ TechStackFormProps) {
           <p className="text-red-500 font-normal mt-2">{errors.projectType.message}</p>
         )}
       </div>
-
-      {/* <div className="flex flex-col">
-        <label className="font-normal text-dark text-lg mt-3">Tech stack</label>
-        <div className="flex">
-          {techstackSelected?.seletedList.map((el) => (
-            <DepartmentTag
-              content={el.name}
-              onClose={() => {
-                setTechstackSelected({
-                  idSelectd: techstackSelected.idSelectd.filter((id) => id !== el._id) || [],
-                  seletedList:
-                    techstackSelected.seletedList.filter((id) => id._id !== el._id) || [],
-                });
-              }}
-            />
-          ))}
-          <input
-            type="text"
-            className="border-0 focus:border-0 font-light"
-            value={techstackInput}
-            onChange={techstackInputHandler}
-          />
-        </div>
-        <select className="text-base p-2 py-1" multiple>
-          {listData.listTechstack.length > 0 &&
-            listData.listTechstack.map((el, index) => {
-              if (!techstackSelected?.idSelectd.includes(el._id)) {
-                return (
-                  <option
-                    key={index}
-                    value={el._id}
-                    className="cursor-pointer hover:bg-table-dark"
-                    onClick={() => {
-                      setTechstackInput("");
-                      setTechstackSelected({
-                        idSelectd: techstackSelected?.idSelectd.concat(el._id) || [],
-                        seletedList: techstackSelected?.seletedList.concat(el) || [],
-                      });
-                    }}
-                  >
-                    {el.name}
-                  </option>
-                );
-              }
-              return <></>;
-            })}
-        </select>
-      </div> */}
 
       <div className="flex flex-col ">
         <label className="font-normal text-dark text-lg mt-3">Tech stack</label>

@@ -9,9 +9,10 @@ import {
 import { BsTrash } from "react-icons/bs";
 import { Link, useHistory, useLocation } from "react-router-dom";
 import { Modal } from "src/components";
+import { routeProjectBase } from "src/constants/routes";
 import { useMedia } from "src/hooks/media-query";
-import { deleteCustomergroup } from "../department.service";
-import { Projects } from "../department.type";
+import { deleteCustomergroup } from "../project.service";
+import { Projects } from "../project.type";
 
 export function ProjectRow({
   name,
@@ -113,14 +114,14 @@ export function ProjectRow({
             <td>
               <div className="flex ">
                 <span>
-                  <Link to={`project-type/edit/${_id}`}>
+                  <Link to={`${routeProjectBase}/edit/${_id}`}>
                     <AiFillEdit />
                   </Link>
                 </span>
                 <span onClick={openModal} className="mx-5">
                   <BsTrash />
                 </span>
-                <span onClick={openModal}>
+                <span>
                   <AiFillEye onClick={() => history.push(`${location.pathname}/${_id}`)} />
                 </span>
               </div>

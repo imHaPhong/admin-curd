@@ -92,15 +92,10 @@ export async function updateCustomergroup(Customergroup: CreateProjectTypeRespon
     console.error(err);
   }
 }
-export async function deleteCustomergroup(id: string) {
-  try {
-    const res = await apiClientBrowser.delete("http://localhost:8080/customer-group", {
-      data: {
-        id,
-      },
-    });
-    return res.data as CreateProjectTypeRespone;
-  } catch (err) {
-    console.error(err);
-  }
+export async function deleteEmployee(id: string) {
+  return apiClientBrowser.delete("http://localhost:8080/employee", {
+    data: {
+      id,
+    },
+  });
 }

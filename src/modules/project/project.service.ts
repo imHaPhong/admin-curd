@@ -1,6 +1,5 @@
 import { config } from "src/constants/config";
 import { apiClientBrowser } from "src/lib/request";
-import { CreateProjectTypeRespone } from "../project-type/project-type.type";
 import { ProjectsResponse } from "./project.type";
 
 const apiProjectUrl = `${config.apiBaseUrl}project`;
@@ -107,15 +106,10 @@ export async function updateProject(Project: ProjectsResponse) {
     console.error(err);
   }
 }
-export async function deleteCustomergroup(id: string) {
-  try {
-    const res = await apiClientBrowser.delete("http://localhost:8080/customer-group", {
-      data: {
-        id,
-      },
-    });
-    return res.data as CreateProjectTypeRespone;
-  } catch (err) {
-    console.error(err);
-  }
+export async function deleteProject(id: string) {
+  return apiClientBrowser.delete("http://localhost:8080/project", {
+    data: {
+      id,
+    },
+  });
 }

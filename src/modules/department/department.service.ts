@@ -83,15 +83,10 @@ export async function updateDepartment(Customergroup: updateDepartmentType) {
     console.error(err);
   }
 }
-export async function deleteCustomergroup(id: string) {
-  try {
-    const res = await apiClientBrowser.delete(`${apiBaseUrl}customer-group`, {
-      data: {
-        id,
-      },
-    });
-    return res.data as CreateProjectTypeRespone;
-  } catch (err) {
-    console.error(err);
-  }
+export async function deleteDepartment(id: string) {
+  return apiClientBrowser.delete(`${apiBaseUrl}department`, {
+    data: {
+      id,
+    },
+  });
 }

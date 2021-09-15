@@ -153,18 +153,18 @@ ProjectFormProps) {
       }
     } else {
       try {
-        const departmentData = {
+        const projectData = {
           ...data,
           techStack: techstackSelected?.idSelectd,
           member: employeeSelected?.idSelectd,
         };
 
         toast.update(toastId, {
-          render: "Đang tạo dự án",
+          render: "Đang tạo mới",
           type: "warning",
           isLoading: true,
         });
-        const projectResponse = await createProject(departmentData);
+        const projectResponse = await createProject(projectData);
         toast.update(toastId, {
           render: "Tạo mới thành công",
           type: "success",

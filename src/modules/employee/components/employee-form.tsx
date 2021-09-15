@@ -202,7 +202,7 @@ export function EmployeeForm({
           className="p-1 font-bold border rounded border-primary-light text-primary-light text-sm hover:bg-primary hover:text-white"
           type="button"
           onClick={() => {
-            append({ techstackId: "", experience: "" });
+            append({ techstackId: listTechstack[0]._id, experience: "" });
           }}
         >
           +

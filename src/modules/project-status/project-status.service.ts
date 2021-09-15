@@ -44,14 +44,9 @@ export async function updateProjectStatus(projectType: CreateProjectStatusRespon
   }
 }
 export async function deleteProjectStatus(id: string) {
-  try {
-    const res = await apiClientBrowser.delete(apiProjectStatus, {
-      data: {
-        id,
-      },
-    });
-    return res.data as CreateProjectStatusRespone;
-  } catch (err) {
-    console.error(err);
-  }
+  return apiClientBrowser.delete(apiProjectStatus, {
+    data: {
+      id,
+    },
+  });
 }

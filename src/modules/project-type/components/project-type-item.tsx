@@ -8,7 +8,9 @@ import {
 } from "react-icons/ai";
 import { BsTrash } from "react-icons/bs";
 import { Link, useHistory, useLocation } from "react-router-dom";
+import { toast } from "react-toastify";
 import { Modal } from "src/components";
+import { routeProjectTypeBase } from "src/constants/routes";
 import { useMedia } from "src/hooks/media-query";
 import { deleteProjectType } from "../project-type.service";
 import { ProjectType } from "./list-project-type";
@@ -22,8 +24,32 @@ export function ProjectTypeRow({ name, desc, priority, status, _id }: ProjectTyp
   const openModal = useCallback(() => setModalOpen(true), []);
   const closeModal = useCallback(() => setModalOpen(false), []);
 
-  function deleteProjectTypeHandler(id: string) {
-    deleteProjectType(id);
+  async function deleteProjectTypeHandler(id: string) {
+    const toastId = toast.loading("Xin đợi...");
+    try {
+      toast.update(toastId, {
+        render: "Đang xóa",
+        type: "warning",
+        isLoading: true,
+      });
+      await deleteProjectType(id);
+      toast.update(toastId, {
+        render: "Xóa thành công",
+        type: "success",
+        isLoading: false,
+        autoClose: 500,
+      });
+      setTimeout(() => {
+        history.push(`${routeProjectTypeBase}`);
+      }, 300);
+    } catch (error) {
+      toast.update(toastId, {
+        render: "Đã xảy ra lỗi không thể thêm trạng thái dự án",
+        type: "error",
+        isLoading: false,
+        autoClose: 500,
+      });
+    }
   }
 
   const history = useHistory();

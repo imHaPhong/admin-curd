@@ -8,9 +8,11 @@ import {
 } from "react-icons/ai";
 import { BsTrash } from "react-icons/bs";
 import { Link, useHistory } from "react-router-dom";
+import { toast } from "react-toastify";
 import { Modal } from "src/components";
+import { routeDepartmentBase } from "src/constants/routes";
 import { useMedia } from "src/hooks/media-query";
-import { deleteCustomergroup } from "../department.service";
+import { deleteDepartment } from "../department.service";
 import { Department } from "../department.type";
 
 export function CustomerGroupRow({ name, desc, techStack, projects, employee, _id }: Department) {
@@ -22,8 +24,32 @@ export function CustomerGroupRow({ name, desc, techStack, projects, employee, _i
   const openModal = useCallback(() => setModalOpen(true), []);
   const closeModal = useCallback(() => setModalOpen(false), []);
 
-  function deleteCustomerGroupHandler(id: string) {
-    deleteCustomergroup(id);
+  async function deleteCustomerGroupHandler(id: string) {
+    const toastId = toast.loading("Xin đợi...");
+    try {
+      toast.update(toastId, {
+        render: "Đang xóa",
+        type: "warning",
+        isLoading: true,
+      });
+      await deleteDepartment(id);
+      toast.update(toastId, {
+        render: "Xóa thành công",
+        type: "success",
+        isLoading: false,
+        autoClose: 500,
+      });
+      setTimeout(() => {
+        history.push(`${routeDepartmentBase}`);
+      }, 300);
+    } catch (error) {
+      toast.update(toastId, {
+        render: "Đã xảy ra lỗi không thể thêm trạng thái dự án",
+        type: "error",
+        isLoading: false,
+        autoClose: 500,
+      });
+    }
   }
 
   const history = useHistory();

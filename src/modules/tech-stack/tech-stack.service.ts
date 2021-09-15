@@ -43,15 +43,10 @@ export async function updateTechstack(projectType: CreateTechstackRespone) {
     console.error(err);
   }
 }
-export async function deleteTechstack(id: string) {
-  try {
-    const res = await apiClientBrowser.delete(apiTechstackUrl, {
-      data: {
-        id,
-      },
-    });
-    return res.data as CreateTechstackRespone;
-  } catch (err) {
-    console.error(err);
-  }
+export function deleteTechstack(id: string) {
+  return apiClientBrowser.delete(apiTechstackUrl, {
+    data: {
+      id,
+    },
+  });
 }

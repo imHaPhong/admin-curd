@@ -43,15 +43,10 @@ export async function updateProjectType(projectType: CreateProjectTypeRespone) {
     console.error(err);
   }
 }
-export async function deleteProjectType(id: string) {
-  try {
-    const res = await apiClientBrowser.delete(apiProjectTypeUrl, {
-      data: {
-        id,
-      },
-    });
-    return res.data as CreateProjectTypeRespone;
-  } catch (err) {
-    console.error(err);
-  }
+export function deleteProjectType(id: string) {
+  return apiClientBrowser.delete(apiProjectTypeUrl, {
+    data: {
+      id,
+    },
+  });
 }

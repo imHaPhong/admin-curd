@@ -116,7 +116,7 @@ export function ProjectTable() {
             )}
           {!loading && listProject.length === 0 && (
             <tr>
-              <td colSpan={5} className="text-center bg-table text-base">
+              <td colSpan={7} className="text-center bg-table text-base">
                 Không tìm thấy dự án phù hợp
               </td>
             </tr>

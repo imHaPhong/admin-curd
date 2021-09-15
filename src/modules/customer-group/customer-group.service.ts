@@ -44,14 +44,9 @@ export async function updateCustomergroup(Customergroup: CreateCustomerGroupResp
   }
 }
 export async function deleteCustomergroup(id: string) {
-  try {
-    const res = await apiClientBrowser.delete(apiCustomerGroupUrl, {
-      data: {
-        id,
-      },
-    });
-    return res.data as CreateCustomerGroupResponseType;
-  } catch (err) {
-    console.error(err);
-  }
+  return await apiClientBrowser.delete(apiCustomerGroupUrl, {
+    data: {
+      id,
+    },
+  });
 }

@@ -8,10 +8,11 @@ import {
 } from "react-icons/ai";
 import { BsTrash } from "react-icons/bs";
 import { Link, useHistory, useLocation } from "react-router-dom";
+import { toast } from "react-toastify";
 import { Modal } from "src/components";
-import { routeProjectBase } from "src/constants/routes";
+import { routeEmployeeBase, routeProjectBase, routeTechStackBase } from "src/constants/routes";
 import { useMedia } from "src/hooks/media-query";
-import { deleteCustomergroup } from "../project.service";
+import { deleteProject } from "../project.service";
 import { Projects } from "../project.type";
 
 export function ProjectRow({
@@ -31,8 +32,32 @@ export function ProjectRow({
   const openModal = useCallback(() => setModalOpen(true), []);
   const closeModal = useCallback(() => setModalOpen(false), []);
 
-  function deleteCustomerGroupHandler(id: string) {
-    deleteCustomergroup(id);
+  async function deleteCustomerGroupHandler(id: string) {
+    const toastId = toast.loading("Xin đợi...");
+    try {
+      toast.update(toastId, {
+        render: "Đang tạo trạng thái dự án",
+        type: "warning",
+        isLoading: true,
+      });
+      await deleteProject(id);
+      toast.update(toastId, {
+        render: "Tạo mới thành công",
+        type: "success",
+        isLoading: false,
+        autoClose: 500,
+      });
+      setTimeout(() => {
+        history.push(`${routeProjectBase}`);
+      }, 300);
+    } catch (error) {
+      toast.update(toastId, {
+        render: "Đã xảy ra lỗi không thể thêm trạng thái dự án",
+        type: "error",
+        isLoading: false,
+        autoClose: 500,
+      });
+    }
   }
 
   const history = useHistory();
@@ -97,19 +122,30 @@ export function ProjectRow({
             <td>{projectStatus.name}</td>
             <td>
               {techStack.length === 0 && "Chưa thêm tech stack"}
-              {techStack.length > 0 &&
-                techStack.map((tech) => <Link to={`tech-stack/${tech._id}`}>{tech.name}, </Link>)}
+              {techStack.length > 0 && (
+                <ul className="list-with-comma">
+                  {techStack.map((project) => (
+                    <li>
+                      <Link to={`${routeTechStackBase}/${project._id}`}>{project.name}</Link>
+                    </li>
+                  ))}
+                </ul>
+              )}
             </td>
             <td>{department !== null ? department.name : "Chưa có TT phụ trách"}</td>
 
             <td>
-              {member && member.length === 0 && "Chưa tham gia vào dự án"}
+              {member && member.length === 0 && "Chưa có thành viên"}
 
-              {member &&
-                member.length > 0 &&
-                member.map((el) => (
-                  <Link to={`project-stack/${el._id}`}>{el.name || "đas"} ,</Link>
-                ))}
+              {member && member.length > 0 && (
+                <ul className="list-with-comma">
+                  {member.map((el) => (
+                    <li>
+                      <Link to={`${routeEmployeeBase}/${el._id}`}>{el.name}</Link>
+                    </li>
+                  ))}
+                </ul>
+              )}
             </td>
             <td>
               <div className="flex ">

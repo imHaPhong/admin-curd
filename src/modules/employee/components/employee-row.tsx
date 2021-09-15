@@ -8,10 +8,12 @@ import {
 } from "react-icons/ai";
 import { BsTrash } from "react-icons/bs";
 import { Link, useHistory, useLocation } from "react-router-dom";
+import { toast } from "react-toastify";
 import { Modal } from "src/components";
+import { routeEmployeeBase, routeTechStackBase } from "src/constants/routes";
 import { useMedia } from "src/hooks/media-query";
 import { Employee } from "src/modules/department/department.type";
-import { deleteCustomergroup } from "../employee.service";
+import { deleteEmployee } from "../employee.service";
 
 export function EmployeeRow({ name, techStack, projects, _id, DoB, phonemumber }: Employee) {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -22,8 +24,32 @@ export function EmployeeRow({ name, techStack, projects, _id, DoB, phonemumber }
   const openModal = useCallback(() => setModalOpen(true), []);
   const closeModal = useCallback(() => setModalOpen(false), []);
 
-  function deleteCustomerGroupHandler(id: string) {
-    deleteCustomergroup(id);
+  async function deleteCustomerGroupHandler(id: string) {
+    const toastId = toast.loading("Xin đợi...");
+    try {
+      toast.update(toastId, {
+        render: "Đang tạo trạng thái dự án",
+        type: "warning",
+        isLoading: true,
+      });
+      await deleteEmployee(id);
+      toast.update(toastId, {
+        render: "Tạo mới thành công",
+        type: "success",
+        isLoading: false,
+        autoClose: 500,
+      });
+      setTimeout(() => {
+        history.push(`${routeEmployeeBase}`);
+      }, 300);
+    } catch (error) {
+      toast.update(toastId, {
+        render: "Đã xảy ra lỗi không thể thêm trạng thái dự án",
+        type: "error",
+        isLoading: false,
+        autoClose: 500,
+      });
+    }
   }
 
   const history = useHistory();
@@ -93,7 +119,7 @@ export function EmployeeRow({ name, techStack, projects, _id, DoB, phonemumber }
                 <ul className="list-with-comma">
                   {techStack.map((tech) => (
                     <li>
-                      <Link to={`tech-stack/${tech._id}`}>{tech.name}</Link>
+                      <Link to={`${routeTechStackBase}/${tech._id}`}>{tech.name}</Link>
                     </li>
                   ))}
                 </ul>

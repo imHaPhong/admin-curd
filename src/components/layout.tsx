@@ -1,5 +1,5 @@
 import classnames from "classnames";
-import { ComponentPropsWithoutRef } from "react";
+import { ComponentPropsWithoutRef, useState } from "react";
 import { useMedia } from "src/hooks/media-query";
 import { Breadcrumb } from "./breadcrumb";
 import { NavBar } from "./navbar";
@@ -9,6 +9,7 @@ type PageLayoutProps = ComponentPropsWithoutRef<"div">;
 
 export function PageLayout({ children, className, ...rest }: PageLayoutProps) {
   const isMobile = useMedia("(min-width: 768px)");
+  const [mobileShow, setMobileShow] = useState<boolean>(false);
 
   return (
     <div
@@ -19,15 +20,18 @@ export function PageLayout({ children, className, ...rest }: PageLayoutProps) {
       )}
       {...rest}
     >
-      <div className="px-2 md:px-0 bg-light">
+      <div className="md:px-0 bg-light">
         <div className="flex">
-          <Sidebar isShow={isMobile} />
+          <Sidebar
+            isShow={isMobile !== mobileShow}
+            showSidebar={async () => setMobileShow((p) => !p)}
+          />
           <div className="w-full h-screen">
-            <NavBar />
+            <NavBar showSidebar={async () => setMobileShow((p) => !p)} />
 
             <div className="w-full md:p-6">
               <Breadcrumb />
-              {children}
+              <div className="mx-2 md:mx-0">{children}</div>
             </div>
           </div>
         </div>

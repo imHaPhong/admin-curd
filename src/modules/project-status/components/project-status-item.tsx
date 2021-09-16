@@ -67,7 +67,7 @@ export function ProjectStatusRow({ name, desc, priority, status, _id }: ProjectT
       <Modal
         isOpen={isModalOpen}
         onClose={closeModal}
-        className="m-3 rounded-md w-full md:w-4/6 max-h-screen xl:w-3/12"
+        className="max-h-44 m-3 rounded-md w-full md:w-4/6 md:max-h-screen xl:w-3/12"
       >
         <div className="">
           <div className="flex justify-between p-3 border-b items-center border-table-lightGray">
@@ -97,7 +97,10 @@ export function ProjectStatusRow({ name, desc, priority, status, _id }: ProjectT
       </Modal>
       <tr
         className="border border-r-0 border-l-0 border-table-lightGray text-base odd:bg-table hover:bg-table-dark font-light cursor-pointer"
-        // onClick={() => setIsShow((p) => !p)}
+        onClick={() => {
+          if (isMobile) return;
+          setIsShow((p) => !p);
+        }}
       >
         <td className="py-2 flex items-center px-2">
           {!isMobile && (

@@ -13,6 +13,7 @@ import {
 
 type SidebarProps = {
   isShow: boolean;
+  showSidebar: () => {};
 };
 
 type CustomLinkProps = {
@@ -21,7 +22,7 @@ type CustomLinkProps = {
   children: ReactNode;
 };
 
-export function Sidebar({ isShow }: SidebarProps) {
+export function Sidebar({ isShow, showSidebar }: SidebarProps) {
   function CustomLink({ exact, to, children }: CustomLinkProps) {
     const match = useRouteMatch({
       exact,
@@ -36,9 +37,14 @@ export function Sidebar({ isShow }: SidebarProps) {
   }
 
   return (
-    <nav className={`bg-darkBlue h-screen ${isShow ? " w-2/12" : "hidden"} text-gray`}>
-      <div className="md:h-16 bg-primary font-bold text-white text-xl flex items-center pl-5">
+    <nav
+      className={`w-full absolute  md:static bg-darkBlue h-screen ${
+        isShow ? " md:w-2/12" : "hidden"
+      } text-gray`}
+    >
+      <div className="h-16 justify-between md:h-16 bg-primary font-bold text-white text-xl flex items-center px-5">
         <span className="">REMARK</span>
+        <span onClick={showSidebar}>X</span>
       </div>
       <div className="w-full flex justify-center">
         <ul className="mt-5 text-base font-light">

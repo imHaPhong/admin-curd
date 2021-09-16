@@ -75,7 +75,7 @@ export function CustomerGroupForm({
           type: "warning",
           isLoading: true,
         });
-        await updateCustomergroup({
+        const customergroupResponse = await updateCustomergroup({
           ...data,
           _id: pId,
         });
@@ -86,7 +86,7 @@ export function CustomerGroupForm({
           autoClose: 500,
         });
         setTimeout(() => {
-          history.push(`${routeCustomerGroupBase}`);
+          history.push(`${routeCustomerGroupBase}/${customergroupResponse?._id}`);
         }, 300);
         reset();
       } catch (error) {
@@ -128,94 +128,99 @@ export function CustomerGroupForm({
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="border-input font-light text-gray p-3 ">
-      <div className="flex flex-col">
-        <label className="font-normal text-dark text-lg">Tên</label>
-        <input
-          className="text-base p-2 py-1 mt-2"
-          {...register("name", {
-            required: "This is a required",
-          })}
-          placeholder="Tên dự án"
-        />
-        {errors.name && <p className="text-red-500 font-normal mt-2">{errors.name.message}</p>}
-      </div>
-      <div className="flex flex-col">
-        <label className="font-normal text-dark text-lg mt-3">Mô tả</label>
-        <textarea
-          rows={4}
-          cols={50}
-          className="text-base p-2 py-1 mt-2 border border-table-lightGray resize-none"
-          {...register("desc", {
-            required: "Mô tả không được để trống",
-          })}
-          placeholder="Mô tả"
-        />
-        {errors.desc && <p className="text-red-500 font-normal mt-2">{errors.desc.message}</p>}
-      </div>
+    <div className="2xl:flex justify-center">
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="border-input font-light text-gray p-3 2xl:w-4/5"
+      >
+        <div className="flex flex-col">
+          <label className="font-normal text-dark text-lg">Tên</label>
+          <input
+            className="text-base p-2 py-1 mt-2"
+            {...register("name", {
+              required: "This is a required",
+            })}
+            placeholder="Tên dự án"
+          />
+          {errors.name && <p className="text-red-500 font-normal mt-2">{errors.name.message}</p>}
+        </div>
+        <div className="flex flex-col">
+          <label className="font-normal text-dark text-lg mt-3">Mô tả</label>
+          <textarea
+            rows={4}
+            cols={50}
+            className="text-base p-2 py-1 mt-2 border border-table-lightGray resize-none"
+            {...register("desc", {
+              required: "Mô tả không được để trống",
+            })}
+            placeholder="Mô tả"
+          />
+          {errors.desc && <p className="text-red-500 font-normal mt-2">{errors.desc.message}</p>}
+        </div>
 
-      <div className="flex flex-col">
-        <label className="font-normal text-dark text-lg mt-3">Trọng số ưu tiên</label>
-        <select
-          className="text-base p-2 py-1 border-table-lightGray border"
-          {...register("priority", {
-            required: "This is a required",
-          })}
-        >
-          <option value={PriorityEnum.priority1}>{PriorityEnum.priority1}</option>
-          <option value={PriorityEnum.priority2}>{PriorityEnum.priority2}</option>
-          <option value={PriorityEnum.priority3}>{PriorityEnum.priority3}</option>
-          <option value={PriorityEnum.priority4}>{PriorityEnum.priority4}</option>
-        </select>
-        {errors.priority && (
-          <p className="text-red-500 font-normal mt-2">{errors.priority.message}</p>
-        )}
-      </div>
+        <div className="flex flex-col">
+          <label className="font-normal text-dark text-lg mt-3">Trọng số ưu tiên</label>
+          <select
+            className="text-base p-2 py-1 border-table-lightGray border"
+            {...register("priority", {
+              required: "This is a required",
+            })}
+          >
+            <option value={PriorityEnum.priority1}>{PriorityEnum.priority1}</option>
+            <option value={PriorityEnum.priority2}>{PriorityEnum.priority2}</option>
+            <option value={PriorityEnum.priority3}>{PriorityEnum.priority3}</option>
+            <option value={PriorityEnum.priority4}>{PriorityEnum.priority4}</option>
+          </select>
+          {errors.priority && (
+            <p className="text-red-500 font-normal mt-2">{errors.priority.message}</p>
+          )}
+        </div>
 
-      <div className="font-normal text-dark text-lg mt-3">Trạng thái </div>
+        <div className="font-normal text-dark text-lg mt-3">Trạng thái </div>
 
-      <div className="">
-        <input
-          {...register("status", { required: "Cần chọn trạng thái" })}
-          type="radio"
-          value="Active"
-          id="radio-active"
-          className="mr-2"
-        />
-        <label className="font-normal text-dark text-lg mt-3" htmlFor="radio-active">
-          Active
-        </label>
-      </div>
+        <div className="">
+          <input
+            {...register("status", { required: "Cần chọn trạng thái" })}
+            type="radio"
+            value="Active"
+            id="radio-active"
+            className="mr-2"
+          />
+          <label className="font-normal text-dark text-lg mt-3" htmlFor="radio-active">
+            Active
+          </label>
+        </div>
 
-      <div>
-        <input
-          {...register("status", { required: "Cần chọn trạng thái" })}
-          type="radio"
-          className="mr-2"
-          value="Inactive"
-          id="radio-inactive"
-        />
-        <label className="font-normal text-dark text-lg mt-3" htmlFor="radio-inactive">
-          Inactive
-        </label>
-      </div>
-      {errors.status && <p className="text-red-500 font-normal mt-2">{errors.status.message}</p>}
-      <div className="flex justify-end px-3 pt-5 py-3 font-light">
-        <button
-          className="p-2 px-2 text-sm font-normal border-primary border text-primary rounded-md mr-2"
-          onClick={() => {
-            history.push(routeCustomerGroupBase);
-          }}
-        >
-          Hủy
-        </button>
-        <button
-          type="submit"
-          className="p-2 px-2 text-white text-sm  font-normal bg-primary rounded-md"
-        >
-          {edit ? "Cập nhật" : "Tạo mới"}
-        </button>
-      </div>
-    </form>
+        <div>
+          <input
+            {...register("status", { required: "Cần chọn trạng thái" })}
+            type="radio"
+            className="mr-2"
+            value="Inactive"
+            id="radio-inactive"
+          />
+          <label className="font-normal text-dark text-lg mt-3" htmlFor="radio-inactive">
+            Inactive
+          </label>
+        </div>
+        {errors.status && <p className="text-red-500 font-normal mt-2">{errors.status.message}</p>}
+        <div className="flex justify-end px-3 pt-5 py-3 font-light">
+          <button
+            className="p-2 px-2 text-sm font-normal border-primary border text-primary rounded-md mr-2"
+            onClick={() => {
+              history.push(routeCustomerGroupBase);
+            }}
+          >
+            Hủy
+          </button>
+          <button
+            type="submit"
+            className="p-2 px-2 text-white text-sm  font-normal bg-primary rounded-md"
+          >
+            {edit ? "Cập nhật" : "Tạo mới"}
+          </button>
+        </div>
+      </form>
+    </div>
   );
 }

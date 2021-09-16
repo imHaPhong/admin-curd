@@ -138,7 +138,7 @@ export function ProjectStatusTable() {
         <span className="mx-5 text-lg">{page}</span>
         <button
           className={`p-2 text-sm border border-table-lightGray rounded hover:text-primary hover:bg-table ${
-            isNext ? "" : "opacity-20"
+            !isNext ? "" : "opacity-20"
           }`}
           onClick={nextHandler}
         >

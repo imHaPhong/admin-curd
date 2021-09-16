@@ -60,7 +60,7 @@ export function ProjectTypeRow({ name, desc, priority, status, _id }: ProjectTyp
       <Modal
         isOpen={isModalOpen}
         onClose={closeModal}
-        className="m-3 rounded-md w-full md:w-4/6 max-h-screen xl:w-3/12"
+        className="max-h-44 m-3 rounded-md w-full md:w-4/6 md:max-h-screen xl:w-3/12"
       >
         <div className="">
           <div className="flex justify-between p-3 border-b items-center border-table-lightGray">
@@ -90,7 +90,10 @@ export function ProjectTypeRow({ name, desc, priority, status, _id }: ProjectTyp
       </Modal>
       <tr
         className="border border-r-0 border-l-0 border-table-lightGray text-base odd:bg-table  hover:bg-table-dark font-light cursor-pointer"
-        // onClick={() => setIsShow((p) => !p)}
+        onClick={() => {
+          if (isMobile) return;
+          setIsShow((p) => !p);
+        }}
       >
         <td className="py-2 flex items-center px-2">
           {!isMobile && (
@@ -142,18 +145,36 @@ export function ProjectTypeRow({ name, desc, priority, status, _id }: ProjectTyp
       {isShow && (
         <tr className="w-full">
           <td colSpan={2}>
-            <ul className="mx-8 mr-16">
+            <ul className="mx-4 mr-8">
               <li className="flex border-b border-gray py-2 ">
                 <span className="font-bold" style={{ minWidth: "120px" }}>
                   Trọng số ưu tiên
                 </span>
                 <span className="ml-5">{priority}</span>
               </li>
-              <li className="flex py-2">
+              <li className="flex border-b border-gray py-2 ">
                 <span className="font-bold" style={{ minWidth: "120px" }}>
                   Trạng thái
                 </span>
                 <span className=" ml-5">{status}</span>
+              </li>
+              <li className="flex py-2 ">
+                <span className="font-bold" style={{ minWidth: "120px" }}>
+                  Hành động
+                </span>
+                <div className="flex ml-5">
+                  <span>
+                    <Link to={`project-type/edit/${_id}`}>
+                      <AiFillEdit />
+                    </Link>
+                  </span>
+                  <span onClick={openModal} className="mx-5">
+                    <BsTrash />
+                  </span>
+                  <span onClick={openModal}>
+                    <AiFillEye onClick={() => history.push(`${location.pathname}/${_id}`)} />
+                  </span>
+                </div>
               </li>
             </ul>
           </td>

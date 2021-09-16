@@ -114,9 +114,23 @@ export async function deleteProject(id: string) {
   });
 }
 
-export async function getProjectReport() {
+export async function getProjectReportAll() {
   try {
-    const res = await apiClientBrowser.get("http://localhost:8080/project-report");
+    const res = await apiClientBrowser.post("http://localhost:8080/project-report");
+    return res.data;
+  } catch (err) {
+    console.error(err);
+  }
+}
+export async function getProjectReport(filter: {
+  projectStatus?: string;
+  projectType?: string;
+  techStack?: string;
+}) {
+  try {
+    const res = await apiClientBrowser.post("http://localhost:8080/project-report", {
+      ...filter,
+    });
     return res.data;
   } catch (err) {
     console.error(err);

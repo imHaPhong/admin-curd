@@ -11,7 +11,7 @@ function pathnameToBreadcrum(pathname: string[]) {
         <>
           <h1 className="font-medium text-2xl text-dark"> {currentPath?.pathName}</h1>
 
-          <div className="flex">
+          <div className="flex text-table-light">
             <Link to={`/${pathname[1]}/${currentPath?.path}`} className="text-blue-400">
               {currentPath?.pathTitle}
             </Link>
@@ -28,7 +28,7 @@ function pathnameToBreadcrum(pathname: string[]) {
             {currentPath?.subPath.find((el) => el.subPath === pathname[2])?.pathName || "Chi tiết"}
           </h1>
 
-          <div className="flex text-base">
+          <div className="flex text-base text-table-light">
             <Link to={"/"} className="text-blue-400">
               {currentPath?.pathTitle}
             </Link>
@@ -50,19 +50,15 @@ function pathnameToBreadcrum(pathname: string[]) {
 }
 
 export function Breadcrumb() {
-  //   const [breadcrum, setBreadcrum] =
-  //     useState<{ pathTitle: string; path: string; pathname: string }[]>();
   const location = useLocation();
 
   useEffect(() => {
     const c = routesPath.find((el) => el.path === location.pathname.toString().split("/")[1]);
-    // eslint-disable-next-line no-console
-    console.log(c);
     document.title = c?.pathName || "";
   }, [location]);
 
   return (
-    <div className="py-2 pb-6">
+    <div className="py-2 pb-6 mx-2 md:mx-0">
       <div className="font-light">
         {pathnameToBreadcrum(location.pathname.toString().split("/"))}
       </div>

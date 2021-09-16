@@ -10,7 +10,13 @@ import { BsTrash } from "react-icons/bs";
 import { Link, useHistory, useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
 import { Modal } from "src/components";
-import { routeEmployeeBase, routeProjectBase, routeTechStackBase } from "src/constants/routes";
+import {
+  routeEmployeeBase,
+  routeProjectBase,
+  routeProjectStatusBase,
+  routeProjectTypeBase,
+  routeTechStackBase,
+} from "src/constants/routes";
 import { useMedia } from "src/hooks/media-query";
 import { deleteProject } from "../project.service";
 import { Projects } from "../project.type";
@@ -68,7 +74,7 @@ export function ProjectRow({
       <Modal
         isOpen={isModalOpen}
         onClose={closeModal}
-        className="m-3 rounded-md w-full md:w-4/6 max-h-screen xl:w-3/12"
+        className="max-h-44 m-3 rounded-md w-full md:w-4/6 md:max-h-screen xl:w-3/12"
       >
         <div className="">
           <div className="flex justify-between p-3 border-b items-center border-table-lightGray">
@@ -98,7 +104,10 @@ export function ProjectRow({
       </Modal>
       <tr
         className="border border-r-0 border-l-0 border-table-lightGray text-base odd:bg-table hover:bg-table-dark font-light cursor-pointer"
-        // onClick={() => setIsShow((p) => !p)}
+        onClick={() => {
+          if (isMobile) return;
+          setIsShow((p) => !p);
+        }}
       >
         <td className="py-2 flex items-center px-2">
           {!isMobile && (
@@ -118,8 +127,14 @@ export function ProjectRow({
         </td>
         {isMobile && (
           <>
-            <td>{projectType.name}</td>
-            <td>{projectStatus !== null ? projectStatus.name : ""}</td>
+            <td>
+              <Link to={`${routeProjectTypeBase}/${projectType._id}`}>{projectType.name}</Link>
+            </td>
+            <td>
+              <Link to={`${routeProjectStatusBase}/${projectStatus._id}`}>
+                {projectStatus.name}
+              </Link>
+            </td>
             <td>
               {techStack.length === 0 && "Chưa thêm tech stack"}
               {techStack.length > 0 && (

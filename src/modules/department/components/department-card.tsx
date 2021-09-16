@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router";
 import { Link } from "react-router-dom";
-import { routeEmployeeBase, routeTechStackBase } from "src/constants/routes";
+import { routeEmployeeBase, routeProjectBase, routeTechStackBase } from "src/constants/routes";
 import { apiClientBrowser } from "src/lib/request";
 import { Department } from "../department.type";
 
@@ -11,12 +11,12 @@ export function DepartmentCard() {
   const [projectTypeData, setProjectTypeData] = useState<Department>();
 
   useEffect(() => {
-    async function getProjectType() {
+    async function getDepartment() {
       const projectTypeInfo = await apiClientBrowser.get(`http://localhost:8080/department/${id}`);
       setProjectTypeData(projectTypeInfo.data as Department);
     }
 
-    getProjectType();
+    getDepartment();
   }, [id]);
 
   return (
@@ -31,7 +31,7 @@ export function DepartmentCard() {
         <tbody className="font-light">
           <tr className="mt-2">
             <td className="border-r pr-20 border-table-lightGray font-bold text-table-light py-2">
-              Loại dự án
+              Tên trung tâm
             </td>
             <td className="pl-10 text-sm">{projectTypeData?.name}</td>
           </tr>
@@ -43,7 +43,7 @@ export function DepartmentCard() {
           </tr>
           <tr className="mt-10 ">
             <td className="border-r border-table-lightGray font-bold text-table-light py-2">
-              Tech stack
+              Các tech stack
             </td>
             <td className="pl-10 text-sm">
               <ul className="flex list-with-comma">
@@ -59,7 +59,15 @@ export function DepartmentCard() {
             <td className="border-r border-table-lightGray font-bold text-table-light py-2">
               Các dự án
             </td>
-            <td className="pl-10 text-sm">{projectTypeData?.projects.map((el) => el.name)}</td>
+            <td className="pl-10 text-sm">
+              <ul className="list-with-comma">
+                {projectTypeData?.projects?.map((el) => (
+                  <li>
+                    <Link to={`${routeProjectBase}/${el._id}`}>{el.name}</Link>
+                  </li>
+                ))}
+              </ul>
+            </td>
           </tr>
           <tr className="mt-2">
             <td className="border-r border-table-lightGray font-bold text-table-light py-2">
@@ -69,7 +77,7 @@ export function DepartmentCard() {
               <ul className="flex">
                 {projectTypeData?.employee.map((el, index) => (
                   <li key={index}>
-                    <Link to={`${routeEmployeeBase}${el._id}`}>{el.name}</Link>
+                    <Link to={`${routeEmployeeBase}/${el._id}`}>{el.name}</Link>
                   </li>
                 ))}
               </ul>

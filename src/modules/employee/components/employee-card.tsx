@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router";
+import { Link } from "react-router-dom";
+import { routeProjectBase, routeTechStackBase } from "src/constants/routes";
 import { apiClientBrowser } from "src/lib/request";
 import { EmployeeDetail } from "../employee.type";
 
@@ -50,10 +52,12 @@ export function EmployeeCard() {
               Tech stack
             </td>
             <td className="pl-10 text-sm">
-              <ul>
+              <ul className="list-with-comma">
                 {employee?.techStack?.map((el, index) => (
                   <li>
-                    {el.name} - {employee.workExperience[index].experience}
+                    <Link to={`${routeTechStackBase}/${el._id}`}>
+                      {el.name} - {employee.workExperience[index].experience}
+                    </Link>
                   </li>
                 ))}
               </ul>
@@ -66,7 +70,10 @@ export function EmployeeCard() {
 
             <td className="pl-10 text-sm">
               {employee?.projects.length === 0 && "Chưa tham gia vào dự án"}
-              {employee?.projects.map((el) => el.name)}
+
+              {employee?.projects.map((el) => (
+                <Link to={`${routeProjectBase}/${el._id}`}>{el.name}</Link>
+              ))}
             </td>
           </tr>
         </tbody>

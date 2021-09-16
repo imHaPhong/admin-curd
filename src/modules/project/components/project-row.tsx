@@ -119,7 +119,7 @@ export function ProjectRow({
         {isMobile && (
           <>
             <td>{projectType.name}</td>
-            <td>{projectStatus.name}</td>
+            <td>{projectStatus !== null ? projectStatus.name : ""}</td>
             <td>
               {techStack.length === 0 && "Chưa thêm tech stack"}
               {techStack.length > 0 && (

@@ -1,4 +1,4 @@
-import { FormEvent, useContext, useEffect, useState } from "react";
+import { FormEvent, useContext, useEffect, useRef, useState } from "react";
 import { Link, useHistory, useLocation } from "react-router-dom";
 import { routeCreateProjectBase } from "src/constants/routes";
 import { useMedia } from "src/hooks/media-query";
@@ -8,8 +8,6 @@ import { FaAngleLeft, FaAngleRight } from "react-icons/fa";
 import { ProjectRow } from "./project-row";
 import { Projects } from "../project.type";
 import { AppContext } from "src/contexts";
-import useDebounce from "src/hooks/debounce";
-import { getProject } from "../project.service";
 
 export function ProjectTable() {
   const isMobile = useMedia("(min-width: 768px)");
@@ -19,7 +17,8 @@ export function ProjectTable() {
   const [page, setPage] = useState<number>(1);
 
   const [search, setSearch] = useState("");
-  const debouncedValue = useDebounce<string>(search, 500);
+  const typingRef = useRef<null | ReturnType<typeof setTimeout>>(null);
+  const [isNext, setIsNext] = useState(false);
 
   const location = useLocation();
   const history = useHistory();
@@ -31,27 +30,11 @@ export function ProjectTable() {
         `http://localhost:8080/project?${queryString.stringify(pageObject)}`,
       );
       setLoading(false);
-      setListProject(projectTypes.data as Projects[]);
+      setListProject(projectTypes.data.data.projectTypes as Projects[]);
+      setIsNext(projectTypes.data.isNext);
     }
     getProject();
   }, [location, setLoading]);
-
-  useEffect(() => {
-    async function getProjectData() {
-      const projectTypes = await getProject({ search });
-      setListProject(projectTypes as Projects[]);
-    }
-    getProjectData();
-    const pageObject: { page?: number; search?: string } = queryString.parse(location.search);
-    const a = {
-      ...pageObject,
-      search: search.trim(),
-      page: 1,
-    };
-
-    history.push(`?${queryString.stringify(a)}`);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [debouncedValue]);
 
   function nextHandler() {
     setPage((p) => (p as number) + Number(1));
@@ -62,9 +45,22 @@ export function ProjectTable() {
     setPage((p) => (p as number) - Number(1));
     history.push(`?page=${Number(page) - 1}`);
   }
-
   function userInputHandler(ev: FormEvent<HTMLInputElement>) {
+    const value = ev.currentTarget.value.trim();
     setSearch(ev.currentTarget.value.trim());
+    if (typingRef.current) {
+      clearTimeout(typingRef.current);
+    }
+    typingRef.current = setTimeout(() => {
+      const pageObject: { page?: number; search?: string } = queryString.parse(location.search);
+      const a = {
+        ...pageObject,
+        search: value,
+        page: 1,
+      };
+
+      history.push(`?${queryString.stringify(a)}`);
+    }, 300);
   }
 
   return (
@@ -133,14 +129,18 @@ export function ProjectTable() {
       </table>
       <div className="mt-2 flex items-center justify-center md:my-10">
         <button
-          className="p-2 text-sm border border-table-lightGray rounded hover:text-primary hover:bg-table"
+          className={`p-2 text-sm border border-table-lightGray rounded hover:text-primary hover:bg-table ${
+            page > 1 ? "" : "opacity-20"
+          }`}
           onClick={prevHandler}
         >
           <FaAngleLeft />
         </button>
         <span className="mx-5 text-lg">{page}</span>
         <button
-          className="p-2 text-sm border border-table-lightGray rounded hover:text-primary hover:bg-table"
+          className={`p-2 text-sm border border-table-lightGray rounded hover:text-primary hover:bg-table ${
+            isNext ? "" : "opacity-20"
+          }`}
           onClick={nextHandler}
         >
           <FaAngleRight />

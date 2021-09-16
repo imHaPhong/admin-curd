@@ -1,4 +1,4 @@
-import { FormEvent, useContext, useEffect, useState } from "react";
+import { FormEvent, useContext, useEffect, useRef, useState } from "react";
 import { Link, useHistory, useLocation } from "react-router-dom";
 import { routeCreateEmployee } from "src/constants/routes";
 import { useMedia } from "src/hooks/media-query";
@@ -8,8 +8,6 @@ import { FaAngleLeft, FaAngleRight } from "react-icons/fa";
 import { Employee } from "../employee.type";
 import { EmployeeRow } from "./employee-row";
 import { AppContext } from "src/contexts";
-import useDebounce from "src/hooks/debounce";
-import { getEmployee } from "../employee.service";
 
 export function EmployeeTabel() {
   const isMobile = useMedia("(min-width: 768px)");
@@ -19,7 +17,8 @@ export function EmployeeTabel() {
   const [page, setPage] = useState<number>(1);
 
   const [search, setSearch] = useState("");
-  const debouncedValue = useDebounce<string>(search, 500);
+  const [isNext, setIsNext] = useState(false);
+  const typingRef = useRef<null | ReturnType<typeof setTimeout>>(null);
 
   const location = useLocation();
   const history = useHistory();
@@ -30,8 +29,9 @@ export function EmployeeTabel() {
       const projectTypes = await apiClientBrowser.get(
         `http://localhost:8080/employee?${queryString.stringify(pageObject)}`,
       );
-      setListEmployee(projectTypes.data as Employee[]);
+      setListEmployee(projectTypes.data.data.projectTypes as Employee[]);
       setLoading(false);
+      setIsNext(projectTypes.data.isNext);
     }
     getProjectTypes();
   }, [location, setLoading]);
@@ -45,25 +45,22 @@ export function EmployeeTabel() {
     setPage((p) => (p as number) - Number(1));
     history.push(`?page=${Number(page) - 1}`);
   }
-  useEffect(() => {
-    async function getEmployeeData() {
-      const projectTypes = await getEmployee({ search });
-      setListEmployee(projectTypes as Employee[]);
-    }
-    getEmployeeData();
-    const pageObject: { page?: number; search?: string } = queryString.parse(location.search);
-    const a = {
-      ...pageObject,
-      search: search.trim(),
-      page: 1,
-    };
-
-    history.push(`?${queryString.stringify(a)}`);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [debouncedValue]);
-
   function userInputHandler(ev: FormEvent<HTMLInputElement>) {
+    const value = ev.currentTarget.value.trim();
     setSearch(ev.currentTarget.value.trim());
+    if (typingRef.current) {
+      clearTimeout(typingRef.current);
+    }
+    typingRef.current = setTimeout(() => {
+      const pageObject: { page?: number; search?: string } = queryString.parse(location.search);
+      const a = {
+        ...pageObject,
+        search: value,
+        page: 1,
+      };
+
+      history.push(`?${queryString.stringify(a)}`);
+    }, 300);
   }
 
   return (
@@ -127,14 +124,18 @@ export function EmployeeTabel() {
       </table>
       <div className="mt-2 flex items-center justify-center md:my-10">
         <button
-          className="p-2 text-sm border border-table-lightGray rounded hover:text-primary hover:bg-table"
+          className={`p-2 text-sm border border-table-lightGray rounded hover:text-primary hover:bg-table ${
+            page > 1 ? "" : "opacity-20"
+          }`}
           onClick={prevHandler}
         >
           <FaAngleLeft />
         </button>
         <span className="mx-5 text-lg">{page}</span>
         <button
-          className="p-2 text-sm border border-table-lightGray rounded hover:text-primary hover:bg-table"
+          className={`p-2 text-sm border border-table-lightGray rounded hover:text-primary hover:bg-table ${
+            isNext ? "" : "opacity-20"
+          }`}
           onClick={nextHandler}
         >
           <FaAngleRight />

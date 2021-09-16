@@ -12,7 +12,7 @@ export async function getTechstack(search?: string) {
         search,
       },
     });
-    return res.data;
+    return res.data.data.projectTypes;
   } catch (err) {
     console.error(err);
   }
@@ -25,7 +25,7 @@ export async function getProject(search?: string) {
         search,
       },
     });
-    return res.data;
+    return res.data.data.projectTypes;
   } catch (err) {
     console.error(err);
   }
@@ -38,7 +38,7 @@ export async function getEmployee(search?: string) {
         search,
       },
     });
-    return res.data;
+    return res.data.data.projectTypes;
   } catch (err) {
     console.error(err);
   }
@@ -61,7 +61,7 @@ export async function getDepartment({
         page,
       },
     });
-    return res.data;
+    return res.data.data.projectTypes;
   } catch (err) {
     console.error(err);
   }

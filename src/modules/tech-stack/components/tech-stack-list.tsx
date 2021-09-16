@@ -1,4 +1,4 @@
-import { FormEvent, useContext, useEffect, useState } from "react";
+import { FormEvent, useContext, useEffect, useRef, useState } from "react";
 import { Link, useHistory, useLocation } from "react-router-dom";
 import { routeCreateTechStackBase } from "src/constants/routes";
 import { useMedia } from "src/hooks/media-query";
@@ -7,7 +7,6 @@ import { FaAngleLeft, FaAngleRight } from "react-icons/fa";
 import { TechstackRow } from "./tech-stack-item";
 import { AppContext } from "src/contexts";
 import { getTechstack } from "../tech-stack.service";
-import useDebounce from "src/hooks/debounce";
 
 export interface TechstackType {
   _id: string;
@@ -23,9 +22,9 @@ export function TechstackList() {
 
   const [listTechstack, setListTechstack] = useState<TechstackType[]>([]);
   const [page, setPage] = useState<number>(1);
+  const [isNext, setIsNext] = useState(false);
 
   const [search, setSearch] = useState("");
-  const debouncedValue = useDebounce<string>(search, 500);
 
   const location = useLocation();
   const history = useHistory();
@@ -34,9 +33,10 @@ export function TechstackList() {
 
     async function fetchTechstackData() {
       setLoading(true);
-      const projectTypes = await getTechstack(pageObject);
+      const techstack = await getTechstack(pageObject);
       setLoading(false);
-      setListTechstack(projectTypes as TechstackType[]);
+      setListTechstack(techstack.data.projectTypes as TechstackType[]);
+      setIsNext(techstack.isNext);
     }
     fetchTechstackData();
   }, [location, setLoading]);
@@ -51,25 +51,24 @@ export function TechstackList() {
     history.push(`?page=${Number(page) - 1}`);
   }
 
-  useEffect(() => {
-    async function getProjectTypes() {
-      const projectTypes = await getTechstack({ search });
-      setListTechstack(projectTypes as TechstackType[]);
-    }
-    getProjectTypes();
-    const pageObject: { page?: number; search?: string } = queryString.parse(location.search);
-    const a = {
-      ...pageObject,
-      search: search.trim(),
-      page: 1,
-    };
-
-    history.push(`?${queryString.stringify(a)}`);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [debouncedValue]);
+  const typingRef = useRef<null | ReturnType<typeof setTimeout>>(null);
 
   function userInputHandler(ev: FormEvent<HTMLInputElement>) {
+    const value = ev.currentTarget.value.trim();
     setSearch(ev.currentTarget.value.trim());
+    if (typingRef.current) {
+      clearTimeout(typingRef.current);
+    }
+    typingRef.current = setTimeout(() => {
+      const pageObject: { page?: number; search?: string } = queryString.parse(location.search);
+      const a = {
+        ...pageObject,
+        search: value,
+        page: 1,
+      };
+
+      history.push(`?${queryString.stringify(a)}`);
+    }, 300);
   }
 
   return (
@@ -131,14 +130,18 @@ export function TechstackList() {
       </table>
       <div className="mt-2 flex items-center justify-center md:my-10">
         <button
-          className="p-2 text-sm border border-table-lightGray rounded hover:text-primary hover:bg-table"
+          className={`p-2 text-sm border border-table-lightGray rounded hover:text-primary hover:bg-table ${
+            page > 1 ? "" : "opacity-20"
+          }`}
           onClick={prevHandler}
         >
           <FaAngleLeft />
         </button>
         <span className="mx-5 text-lg">{page}</span>
         <button
-          className="p-2 text-sm border border-table-lightGray rounded hover:text-primary hover:bg-table"
+          className={`p-2 text-sm border border-table-lightGray rounded hover:text-primary hover:bg-table ${
+            isNext ? "" : "opacity-20"
+          }`}
           onClick={nextHandler}
         >
           <FaAngleRight />

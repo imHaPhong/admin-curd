@@ -38,7 +38,7 @@ export async function createProjectType(projectType: CreateProjectTypeRespone) {
 export async function updateProjectType(projectType: CreateProjectTypeRespone) {
   try {
     const res = await apiClientBrowser.put(apiProjectTypeUrl, projectType);
-    return res.data as CreateProjectTypeRespone;
+    return res.data as ProjectTypeRespone;
   } catch (err) {
     console.error(err);
   }

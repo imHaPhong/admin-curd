@@ -1,4 +1,4 @@
-import { FormEvent, useContext, useEffect, useState } from "react";
+import { FormEvent, useContext, useEffect, useRef, useState } from "react";
 import { Link, useHistory, useLocation } from "react-router-dom";
 import { routeCreateProjectStatusBase } from "src/constants/routes";
 import { useMedia } from "src/hooks/media-query";
@@ -6,7 +6,6 @@ import queryString from "query-string";
 import { FaAngleLeft, FaAngleRight } from "react-icons/fa";
 import { ProjectStatusRow } from "./project-status-item";
 import { AppContext } from "src/contexts";
-import useDebounce from "src/hooks/debounce";
 import { getProjectStatus } from "../project-status.service";
 
 export interface ProjectStatus {
@@ -23,9 +22,8 @@ export function ProjectStatusTable() {
 
   const [listProjectStatus, setListProjectStatus] = useState<ProjectStatus[]>([]);
   const [page, setPage] = useState<number>(1);
-
+  const [isNext, setIsNext] = useState(false);
   const [search, setSearch] = useState("");
-  const debouncedValue = useDebounce<string>(search, 500);
 
   const location = useLocation();
   const history = useHistory();
@@ -36,10 +34,12 @@ export function ProjectStatusTable() {
       setLoading(true);
       const projectTypes = await getProjectStatus(pageObject);
       setLoading(false);
-      setListProjectStatus(projectTypes as ProjectStatus[]);
+      setListProjectStatus(projectTypes.data.projectTypes as ProjectStatus[]);
+      setIsNext(projectTypes.isNext);
     }
     fetchProjectStatus();
-  }, [location, setLoading]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location]);
 
   function nextHandler() {
     setPage((p) => (p as number) + Number(1));
@@ -50,26 +50,24 @@ export function ProjectStatusTable() {
     setPage((p) => (p as number) - Number(1));
     history.push(`?page=${Number(page) - 1}`);
   }
-
-  useEffect(() => {
-    async function getProjectTypes() {
-      const projectTypes = await getProjectStatus({ search });
-      setListProjectStatus(projectTypes as ProjectStatus[]);
-    }
-    getProjectTypes();
-    const pageObject: { page?: number; search?: string } = queryString.parse(location.search);
-    const a = {
-      ...pageObject,
-      search: search.trim(),
-      page: 1,
-    };
-
-    history.push(`?${queryString.stringify(a)}`);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [debouncedValue]);
+  const typingRef = useRef<null | ReturnType<typeof setTimeout>>(null);
 
   function userInputHandler(ev: FormEvent<HTMLInputElement>) {
+    const value = ev.currentTarget.value.trim();
     setSearch(ev.currentTarget.value.trim());
+    if (typingRef.current) {
+      clearTimeout(typingRef.current);
+    }
+    typingRef.current = setTimeout(() => {
+      const pageObject: { page?: number; search?: string } = queryString.parse(location.search);
+      const a = {
+        ...pageObject,
+        search: value,
+        page: 1,
+      };
+
+      history.push(`?${queryString.stringify(a)}`);
+    }, 300);
   }
   return (
     <div className="w-full rounded p-3 bg-white text-table-light md:px-8">
@@ -130,14 +128,18 @@ export function ProjectStatusTable() {
       </table>
       <div className="mt-2 flex items-center justify-center md:my-10">
         <button
-          className="p-2 text-sm border border-table-lightGray rounded hover:text-primary hover:bg-table"
+          className={`p-2 text-sm border border-table-lightGray rounded hover:text-primary hover:bg-table ${
+            page > 1 ? "" : "opacity-20"
+          }`}
           onClick={prevHandler}
         >
           <FaAngleLeft />
         </button>
         <span className="mx-5 text-lg">{page}</span>
         <button
-          className="p-2 text-sm border border-table-lightGray rounded hover:text-primary hover:bg-table"
+          className={`p-2 text-sm border border-table-lightGray rounded hover:text-primary hover:bg-table ${
+            isNext ? "" : "opacity-20"
+          }`}
           onClick={nextHandler}
         >
           <FaAngleRight />

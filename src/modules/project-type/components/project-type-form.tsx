@@ -70,9 +70,9 @@ export function ProjectTypeForm({
     if (edit) {
       try {
         toast.update(toastId, { render: "Đang tạo loại dự án", type: "warning", isLoading: true });
-        await updateProjectType({
+        const projectTypeResponse = await updateProjectType({
           ...data,
-          pId,
+          _id: pId,
         });
         toast.update(toastId, {
           render: "Tạo mới thành công",
@@ -81,7 +81,7 @@ export function ProjectTypeForm({
           autoClose: 500,
         });
         setTimeout(() => {
-          history.push(`${routeProjectTypeBase}`);
+          history.push(`${routeProjectTypeBase}/${projectTypeResponse?._id}`);
         }, 300);
         reset();
       } catch (error) {

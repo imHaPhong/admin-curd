@@ -1,4 +1,4 @@
-import { FormEvent, useContext, useEffect, useState } from "react";
+import { FormEvent, useContext, useEffect, useRef, useState } from "react";
 import { Link, useHistory, useLocation } from "react-router-dom";
 import { routeCreateDepartmentBase } from "src/constants/routes";
 import { useMedia } from "src/hooks/media-query";
@@ -8,7 +8,6 @@ import { CustomerGroupRow } from "./department-row";
 import { Department } from "../department.type";
 import { AppContext } from "src/contexts";
 import { getDepartment } from "../department.service";
-import useDebounce from "src/hooks/debounce";
 
 export function DepartmentTabel() {
   const isMobile = useMedia("(min-width: 768px)");
@@ -18,36 +17,23 @@ export function DepartmentTabel() {
   const [page, setPage] = useState<number>(1);
 
   const [search, setSearch] = useState("");
-  const debouncedValue = useDebounce<string>(search, 500);
+  const [isNext, setIsNext] = useState(false);
+  const typingRef = useRef<null | ReturnType<typeof setTimeout>>(null);
 
   const location = useLocation();
   const history = useHistory();
   useEffect(() => {
     const pageObject: { page?: string; search?: string } = queryString.parse(location.search);
-    async function getProjectTypes() {
+    async function getDepartmentData() {
       setLoading(true);
-      const projectTypes = await getDepartment(pageObject);
+      const department = await getDepartment(pageObject);
       setLoading(false);
-      setListProjectType(projectTypes as Department[]);
+      setListProjectType(department as Department[]);
+      setIsNext(department.isNext);
     }
-    getProjectTypes();
+    getDepartmentData();
   }, [location, setLoading]);
-  useEffect(() => {
-    async function getProjectTypes() {
-      const projectTypes = await getDepartment({ search });
-      setListProjectType(projectTypes as Department[]);
-    }
-    getProjectTypes();
-    const pageObject: { page?: number; search?: string } = queryString.parse(location.search);
-    const a = {
-      ...pageObject,
-      search: search.trim(),
-      page: 1,
-    };
 
-    history.push(`?${queryString.stringify(a)}`);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [debouncedValue]);
   function nextHandler() {
     setPage((p) => (p as number) + Number(1));
     history.push(`?page=${Number(page) + 1}`);
@@ -59,7 +45,21 @@ export function DepartmentTabel() {
   }
 
   function userInputHandler(ev: FormEvent<HTMLInputElement>) {
+    const value = ev.currentTarget.value.trim();
     setSearch(ev.currentTarget.value.trim());
+    if (typingRef.current) {
+      clearTimeout(typingRef.current);
+    }
+    typingRef.current = setTimeout(() => {
+      const pageObject: { page?: number; search?: string } = queryString.parse(location.search);
+      const queryObj = {
+        ...pageObject,
+        search: value,
+        page: 1,
+      };
+
+      history.push(`?${queryString.stringify(queryObj)}`);
+    }, 300);
   }
 
   return (
@@ -121,16 +121,21 @@ export function DepartmentTabel() {
           )}
         </tbody>
       </table>
+
       <div className="mt-2 flex items-center justify-center md:my-10">
         <button
-          className="p-2 text-sm border border-table-lightGray rounded hover:text-primary hover:bg-table"
+          className={`p-2 text-sm border border-table-lightGray rounded hover:text-primary hover:bg-table ${
+            page > 1 ? "" : "opacity-20"
+          }`}
           onClick={prevHandler}
         >
           <FaAngleLeft />
         </button>
         <span className="mx-5 text-lg">{page}</span>
         <button
-          className="p-2 text-sm border border-table-lightGray rounded hover:text-primary hover:bg-table"
+          className={`p-2 text-sm border border-table-lightGray rounded hover:text-primary hover:bg-table ${
+            isNext ? "" : "opacity-20"
+          }`}
           onClick={nextHandler}
         >
           <FaAngleRight />

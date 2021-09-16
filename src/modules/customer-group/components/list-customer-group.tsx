@@ -1,4 +1,4 @@
-import { FormEvent, useContext, useEffect, useState } from "react";
+import { FormEvent, useContext, useEffect, useRef, useState } from "react";
 import { Link, useHistory, useLocation } from "react-router-dom";
 import { routeCreateCustomerGroupBase } from "src/constants/routes";
 import { useMedia } from "src/hooks/media-query";
@@ -7,7 +7,6 @@ import { FaAngleLeft, FaAngleRight } from "react-icons/fa";
 import { CustomerGroupRow } from "./customer-group-item";
 import { AppContext } from "src/contexts";
 import { getCustomergroup } from "../customer-group.service";
-import useDebounce from "src/hooks/debounce";
 
 export interface CustomerGroupType {
   _id: string;
@@ -23,9 +22,10 @@ export function CustomerGroupTable() {
 
   const [listProjectType, setListProjectType] = useState<CustomerGroupType[]>([]);
   const [page, setPage] = useState<number>(1);
+  const [isNext, setIsNext] = useState(false);
+  const typingRef = useRef<null | ReturnType<typeof setTimeout>>(null);
 
   const [search, setSearch] = useState("");
-  const debouncedValue = useDebounce<string>(search, 500);
 
   const location = useLocation();
   const history = useHistory();
@@ -35,7 +35,8 @@ export function CustomerGroupTable() {
       setLoading(true);
       const customerGroup = await getCustomergroup(pageObject);
       setLoading(false);
-      setListProjectType(customerGroup as CustomerGroupType[]);
+      setListProjectType(customerGroup.data.projectTypes as CustomerGroupType[]);
+      setIsNext(customerGroup.isNext);
     }
     getCustomerGroupData();
   }, [location, setLoading]);
@@ -50,25 +51,22 @@ export function CustomerGroupTable() {
     history.push(`?page=${Number(page) - 1}`);
   }
 
-  useEffect(() => {
-    async function getProjectTypes() {
-      const projectTypes = await getCustomergroup({ search });
-      setListProjectType(projectTypes as CustomerGroupType[]);
-    }
-    getProjectTypes();
-    const pageObject: { page?: number; search?: string } = queryString.parse(location.search);
-    const a = {
-      ...pageObject,
-      search: search.trim(),
-      page: 1,
-    };
-
-    history.push(`?${queryString.stringify(a)}`);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [debouncedValue]);
-
   function userInputHandler(ev: FormEvent<HTMLInputElement>) {
+    const value = ev.currentTarget.value.trim();
     setSearch(ev.currentTarget.value.trim());
+    if (typingRef.current) {
+      clearTimeout(typingRef.current);
+    }
+    typingRef.current = setTimeout(() => {
+      const pageObject: { page?: number; search?: string } = queryString.parse(location.search);
+      const a = {
+        ...pageObject,
+        search: value,
+        page: 1,
+      };
+
+      history.push(`?${queryString.stringify(a)}`);
+    }, 300);
   }
   return (
     <div className="w-full rounded p-3 bg-white text-table-light md:px-8">
@@ -128,16 +126,21 @@ export function CustomerGroupTable() {
           )}
         </tbody>
       </table>
+
       <div className="mt-2 flex items-center justify-center md:my-10">
         <button
-          className="p-2 text-sm border border-table-lightGray rounded hover:text-primary hover:bg-table"
+          className={`p-2 text-sm border border-table-lightGray rounded hover:text-primary hover:bg-table ${
+            page > 1 ? "" : "opacity-20"
+          }`}
           onClick={prevHandler}
         >
           <FaAngleLeft />
         </button>
         <span className="mx-5 text-lg">{page}</span>
         <button
-          className="p-2 text-sm border border-table-lightGray rounded hover:text-primary hover:bg-table"
+          className={`p-2 text-sm border border-table-lightGray rounded hover:text-primary hover:bg-table ${
+            isNext ? "" : "opacity-20"
+          }`}
           onClick={nextHandler}
         >
           <FaAngleRight />

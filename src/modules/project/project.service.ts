@@ -113,3 +113,12 @@ export async function deleteProject(id: string) {
     },
   });
 }
+
+export async function getProjectReport() {
+  try {
+    const res = await apiClientBrowser.get("http://localhost:8080/project-report");
+    return res.data;
+  } catch (err) {
+    console.error(err);
+  }
+}

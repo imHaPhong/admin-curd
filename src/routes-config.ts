@@ -25,6 +25,7 @@ import {
   routeHomeBase,
   routeProjectBase,
   routeProjectDetail,
+  routeProjectReport,
   routeProjectStatusBase,
   routeProjectStatusDetailBase,
   routeProjectTypeBase,
@@ -190,5 +191,10 @@ export const routesConfig = [
     path: routeProjectDetail,
     exact: true,
     component: loadable(lazy(() => import("./pages/mange/project/detail-project"))),
+  },
+  {
+    path: routeProjectReport,
+    exact: true,
+    component: loadable(lazy(() => import("./pages/reports/projects"))),
   },
 ];

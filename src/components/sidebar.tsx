@@ -5,6 +5,7 @@ import {
   routeDepartmentBase,
   routeEmployeeBase,
   routeProjectBase,
+  routeProjectReport,
   routeProjectStatusBase,
   routeProjectTypeBase,
   routeTechStackBase,
@@ -65,7 +66,9 @@ export function Sidebar({ isShow }: SidebarProps) {
             <CustomLink to={routeProjectBase}>Dự án</CustomLink>
           </li>
           <li className="font-normal mt-5 mb-2 uppercase">Báo cáo</li>
-          <li>Số lượng dự án</li>
+          <li>
+            <CustomLink to={routeProjectReport}>Số lượng dự án</CustomLink>
+          </li>
           <li>Số lượng nhân sự</li>
         </ul>
       </div>

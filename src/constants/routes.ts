@@ -41,3 +41,6 @@ export const routeProjectBase = `${routeManageBase}/project`;
 export const routeCreateProjectBase = `${routeManageBase}/project/add`;
 export const routeEditProject = `${routeManageBase}/project/edit/:id`;
 export const routeProjectDetail = `${routeManageBase}/project/:id`;
+
+export const routeReportBase = "/report";
+export const routeProjectReport = `${routeReportBase}/project`;
